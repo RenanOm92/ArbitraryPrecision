@@ -33,30 +33,43 @@ public class arbitraryPrecision {
 		long[] numero1 = separarNumeros(st1, size);
 		long[] numero2 = separarNumeros(st2, size);
 		
+		long[] numeroParcial = fazerSomaEmColunas(numero1,numero2);
 		
-		//somar agora os 2 números
+		//System.out.println(numeroParcial);
+		
+		//FazerCarry do que passar
+		//completarComZero(numeroFinal, size);
+		//Concatenar tudo
+		
 	}
+	
+	
+	// MUITO CUIDADO QUANDO TRANSFORMA DE STRING PARA LONG
+	// POIS O QUE É 1012 PODE VIRAR 1 E 12, E O CERTO SERIA 1 E 012
 	
 	public static long[] separarNumeros(String mensagem, int size){
 		int tamanhoNum = mensagem.length();
 		
-		long[] numero = new long[( tamanhoNum / size)+ (tamanhoNum % size)];
+		int restoNum = tamanhoNum % size;		
+		int um = 0;
+		if (restoNum != 0)
+			um = 1;
+		
+		long[] numero = new long[( tamanhoNum / size)+ um];
 		
 		char[] aux = new char[size];
 		String aux2 = new String();
 		
-		for (int i = 0; i < (tamanhoNum / size) ; i++){
+		for (int i = 0; i < (tamanhoNum / size) ; i++){ // Talvez botar isso em openCl tb?
 			int fim = mensagem.length()-(i * size);
 			int comeco = fim - size;
 			mensagem.getChars(comeco, fim, aux, 0); // Retorna um vetor de char com o intervalo
 			
 			aux2 = new String(aux); // Transforma de vetor de char para String
-			
+			//System.out.println(i+": "+aux2);
 			numero[i] = Long.parseLong(aux2);	// E o vetor de string para long
-			System.out.println(numero[i]); // É eficiente? provavelmente não!
-		}
-		
-		int restoNum = tamanhoNum % size;
+			//System.out.println(i+": "+numero[i]); // É eficiente? provavelmente não!
+		}		
 		
 		aux = new char[restoNum];
 		
@@ -64,9 +77,41 @@ public class arbitraryPrecision {
 				 mensagem.getChars(0, restoNum, aux, 0);
 				 aux2 = new String(aux);
 				 numero[numero.length-1] = Long.parseLong(aux2);
-				 System.out.println(numero[numero.length-1]);
+				 //System.out.println(numero[numero.length-1]);
 		}
 		
 		return numero;
 	}
+	
+	public static long[] fazerSomaEmColunas(long[] numero1, long[] numero2){ //Sequencial, problema do 0 ainda
+		//System.out.println(numero1.length);
+		//System.out.println(numero2.length);
+		long[] numeroFinal;
+		if (numero1.length < numero2.length){
+			numeroFinal = numero2;
+			for (int i = 0; i < numero1.length; i++){
+				numeroFinal[i] = numero1[i] + numero2[i]; 
+			}
+		}else{
+			numeroFinal = numero1;
+			for (int i = 0; i < numero2.length; i++){
+				numeroFinal[i] = numero1[i] + numero2[i]; 
+			}
+		}
+		
+		for (int i = 0; i < numeroFinal.length; i++){ // Tem que pegar e completar de 0.
+			System.out.println(numeroFinal[i]);
+		}
+		
+		return numeroFinal;
+		
+	}
+	
+//	public static void completarComZero(long[] numero, int size){
+//		String[] numeroFinal = new String[numero.length];
+//		for (int i = 0; i < numero.length-1; i++){
+//			numeroFinal[i] = numero[i]
+//		}
+//	}
+	
 }
