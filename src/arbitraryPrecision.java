@@ -20,24 +20,37 @@ public class arbitraryPrecision {
 		
 //		colocar isso quando parar de testar os numeros...
 //	  
-//		int arquitetura = 64;
-//		long numeroCasasDecimais = (long)Math.pow(2, arquitetura);
-//				
-//		int size = (Long.toString(numeroCasasDecimais).length())-1;
+				
+		int arquitetura = 10;
+		long numeroCasasDecimais = (long)Math.pow(2, arquitetura-1);
+				
+		int size = (Long.toString(numeroCasasDecimais).length())-1;
 	
 //		arquitetura que vou testar vai ser x10, 10 bits, numero maior é 1024, 
-//		tirando 1 digito, 999. 3 casas decimais.
-//		
-		int size = 3;
+//		então o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
+//		e eu tenho que tirar 1 digito usando os decimais.
+//		Exemplo: Arquitetura suporta maior numero 1024 = 2^10, vou usar	cada número
+//		então até 512 = 2^9, 3 digitos, só que se eu separar em intervalos de 3 digitos,
+//		corre o risco de eu pegar números 999, que quando somados extrapolem o 1024
+//		que é o maior suportado pela máquina. Então vou pegar o número de digitos de
+//		(2^n-1) e tirar 1 digito. Assim sendo, o exemplo de 1024, separaria em intervalos
+//		de 2 dígitos.		
+		
 		
 		long[] numero1 = separarNumeros(st1, size);
 		long[] numero2 = separarNumeros(st2, size);
 		
-		long[] numeroParcial = fazerSomaEmColunas(numero1,numero2);
+		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
 		
-		//System.out.println(numeroParcial);
 		
-		//FazerCarry do que passar
+		long tempoInicio = System.currentTimeMillis();
+		String[] numero = passarCarry(numeroParcial,size);
+		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio));
+		
+		
+		tempoInicio = System.currentTimeMillis();
+		passarCarry2(numeroParcial,size);
+		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio)); 
 		//completarComZero(numeroFinal, size);
 		//Concatenar tudo
 		
@@ -83,28 +96,62 @@ public class arbitraryPrecision {
 		return numero;
 	}
 	
-	public static long[] fazerSomaEmColunas(long[] numero1, long[] numero2){ //Sequencial, problema do 0 ainda
+	public static long[] fazerSomaEmColunasSequencial(long[] numero1, long[] numero2){ //Sequencial, problema do 0 ainda
 		//System.out.println(numero1.length);
 		//System.out.println(numero2.length);
 		long[] numeroFinal;
 		if (numero1.length < numero2.length){
 			numeroFinal = numero2;
 			for (int i = 0; i < numero1.length; i++){
-				numeroFinal[i] = numero1[i] + numero2[i]; 
+				//System.out.print(numero1[i]+ " + "+numero2[i]+" = ");
+				numeroFinal[i] = numero1[i] + numero2[i];
+				//System.out.println(numeroFinal[i]);
 			}
 		}else{
 			numeroFinal = numero1;
 			for (int i = 0; i < numero2.length; i++){
-				numeroFinal[i] = numero1[i] + numero2[i]; 
+				//System.out.print(numero1[i]+ " + "+numero2[i]+" = ");
+				numeroFinal[i] = numero1[i] + numero2[i];
+				//System.out.println(numeroFinal[i]);
 			}
 		}
 		
-		for (int i = 0; i < numeroFinal.length; i++){ // Tem que pegar e completar de 0.
-			System.out.println(numeroFinal[i]);
-		}
+//		for (int i = 0; i < numeroFinal.length; i++){ // Tem que pegar e completar de 0.
+//			System.out.println(numeroFinal[i]);
+//		}
 		
 		return numeroFinal;
 		
+	}
+	
+	public static String[] passarCarry(long[] numero, int size){
+		String[] numeroString = new String[numero.length];
+		for (int i = 0; i < numero.length; i++){
+			numeroString[i] = Long.toString(numero[i]);
+			System.out.println("number "+numeroString[i]);
+			if ((numeroString[i].length() > size) && (i < numero.length-1)){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
+				numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
+				numero[i+1] = numero[i+1] + 1; // Carry passado
+				System.out.println(numeroString[i]);
+			}	
+		}
+		return numeroString;
+	}
+
+	public static void passarCarry2(long[] numero, int size){
+		for (int i = 0; i < numero.length; i++){		
+			if (qtdDigitos(numero[i]) > size){
+				
+			}
+		}
+	}
+	
+	public static int qtdDigitos (long n) {  
+		n = Math.abs(n);  
+	    if (n == 0) 
+	    	return 1;  
+	    else 
+	    	return (int) (Math.log10 (n) + 1);   
 	}
 	
 //	public static void completarComZero(long[] numero, int size){
