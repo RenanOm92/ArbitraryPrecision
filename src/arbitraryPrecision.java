@@ -21,7 +21,7 @@ public class arbitraryPrecision {
 //		colocar isso quando parar de testar os numeros...
 //	  
 				
-		int arquitetura = 10;
+		int arquitetura = 32;
 		long numeroCasasDecimais = (long)Math.pow(2, arquitetura-1);
 				
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
@@ -43,17 +43,21 @@ public class arbitraryPrecision {
 		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
 		
 		
-		long tempoInicio = System.currentTimeMillis();
+//		long tempoInicio = System.currentTimeMillis();
 		String[] numero = passarCarry(numeroParcial,size);
-		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio));
+//		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio));
 		
 		
-		tempoInicio = System.currentTimeMillis();
-		passarCarry2(numeroParcial,size);
-		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio)); 
-		//completarComZero(numeroFinal, size);
-		//Concatenar tudo
+//		tempoInicio = System.currentTimeMillis();
+//		passarCarry2(numeroParcial,size);
+//		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio)); 
 		
+		
+		numero = completarComZero(numero, size);
+		
+		
+		String soma = concatenar(numero);
+		System.out.println(soma);
 	}
 	
 	
@@ -128,37 +132,54 @@ public class arbitraryPrecision {
 		String[] numeroString = new String[numero.length];
 		for (int i = 0; i < numero.length; i++){
 			numeroString[i] = Long.toString(numero[i]);
-			System.out.println("number "+numeroString[i]);
+			//System.out.println("number "+numeroString[i]);
 			if ((numeroString[i].length() > size) && (i < numero.length-1)){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
 				numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
 				numero[i+1] = numero[i+1] + 1; // Carry passado
-				System.out.println(numeroString[i]);
+				//System.out.println(numeroString[i]);
 			}	
 		}
 		return numeroString;
 	}
 
-	public static void passarCarry2(long[] numero, int size){
-		for (int i = 0; i < numero.length; i++){		
-			if (qtdDigitos(numero[i]) > size){
-				
-			}
-		}
-	}
-	
-	public static int qtdDigitos (long n) {  
-		n = Math.abs(n);  
-	    if (n == 0) 
-	    	return 1;  
-	    else 
-	    	return (int) (Math.log10 (n) + 1);   
-	}
-	
-//	public static void completarComZero(long[] numero, int size){
-//		String[] numeroFinal = new String[numero.length];
-//		for (int i = 0; i < numero.length-1; i++){
-//			numeroFinal[i] = numero[i]
+//	public static void passarCarry2(long[] numero, int size){
+//		for (int i = 0; i < numero.length; i++){		
+//			if (qtdDigitos(numero[i]) > size){
+//				
+//			}
 //		}
 //	}
+//	
+//	public static int qtdDigitos (long n) {  
+//		n = Math.abs(n);  
+//	    if (n == 0) 
+//	    	return 1;  
+//	    else 
+//	    	return (int) (Math.log10 (n) + 1);   
+//	}
+	
+	public static String[] completarComZero(String[] numero, int size){
+		StringBuilder concatenador;
+		for (int i = 0; i < numero.length-1; i++){
+			if (numero[i].length() < size){
+				
+				concatenador = new StringBuilder();
+				for (int j = 0; j < size - numero[i].length(); j++){
+					concatenador.append("0");					
+				}
+				concatenador.append(numero[i]);
+				numero[i] = concatenador.toString();
+			}
+		}
+		return numero;
+	}
+	
+	public static String concatenar(String[] numero){
+		StringBuilder saida = new StringBuilder();
+		for (int i = numero.length -1; i >= 0 ; i--){
+			saida.append(numero[i]);
+		}
+		return saida.toString();
+	}
 	
 }
