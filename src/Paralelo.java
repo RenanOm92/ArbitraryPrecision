@@ -1,9 +1,7 @@
 /*
  * JOCL - Java bindings for OpenCL
  * 
- * Copyright 2009 Marco Hutter - http://www.jocl.org/
- * 
- * Code modified by Renan Oliveira
+ * Code by Renan Oliveira
  */
 
 
@@ -30,12 +28,6 @@ public class Paralelo
         "    c[gid] = a[gid] + b[gid];"+
         "}";
     
-
-    /**
-     * The entry point of this sample
-     * 
-     * @param args Not used
-     */
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
     	
         long srcArrayA[] = numero1;
@@ -54,7 +46,14 @@ public class Paralelo
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        // The platform, device type and device number
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork);
+        
+        return dstArray;
+    }
+    
+    public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork){
+    	
+    	// The platform, device type and device number
         // that will be used
         final int platformIndex = 0;
         final long deviceType = CL_DEVICE_TYPE_ALL;
@@ -147,6 +146,7 @@ public class Paralelo
         clReleaseCommandQueue(commandQueue);
         clReleaseContext(context);
 
-        return dstArray;
+        return dst;
+    	
     }
 }
