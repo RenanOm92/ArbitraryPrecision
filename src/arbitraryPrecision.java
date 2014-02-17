@@ -11,22 +11,14 @@ public class arbitraryPrecision {
 		System.out.println("Digite numero 1: ");
 		String st1 = teste.readLine();
 		System.out.println("Digite numero 2: ");
-		String st2 = teste.readLine();
-		
-		//String st1 = "1234567890";
-		//String st2 = "43";	
-		
-
-		
-//		colocar isso quando parar de testar os numeros...
-//	  
+		String st2 = teste.readLine();		
 				
-		int arquitetura = 32;
+		int arquitetura = 64;
 		long numeroCasasDecimais = (long)Math.pow(2, arquitetura-1);
-				
+	
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
 	
-//		arquitetura que vou testar vai ser x10, 10 bits, numero maior é 1024, 
+//		Arquitetura que vou testar vai ser x10, 10 bits, numero maior é 1024, 
 //		então o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
 //		e eu tenho que tirar 1 digito usando os decimais.
 //		Exemplo: Arquitetura suporta maior numero 1024 = 2^10, vou usar	cada número
@@ -36,15 +28,24 @@ public class arbitraryPrecision {
 //		(2^n-1) e tirar 1 digito. Assim sendo, o exemplo de 1024, separaria em intervalos
 //		de 2 dígitos.		
 		
+//		Arquitetura máxima suportada é 64x.
 		
 		long[] numero1 = separarNumeros(st1, size);
 		long[] numero2 = separarNumeros(st2, size);
 		
+		
+		long tempoInicio = System.currentTimeMillis();
 		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
+		System.out.println("Tempo da soma sequencial: "+(System.currentTimeMillis()-tempoInicio));
+		
+		tempoInicio = System.currentTimeMillis();
+		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
+		System.out.println("Tempo da soma paralelo em openCL: "+(System.currentTimeMillis()-tempoInicio));
 		
 		
 //		long tempoInicio = System.currentTimeMillis();
 		String[] numero = passarCarry(numeroParcial,size);
+		String[] numerox = passarCarry(numeroParcial2,size);
 //		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio));
 		
 		
@@ -52,17 +53,21 @@ public class arbitraryPrecision {
 //		passarCarry2(numeroParcial,size);
 //		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio)); 
 		
-		
+// 		Devido a transformada de string para long, o que era 100012 pode virar 100 | 12, 
+// 		podendo gerar inconsistencia	depois para realizar a concatenação.	
+// 		Então é necessário preencher com 0 os números que não tem o tamanho da coluna.	
 		numero = completarComZero(numero, size);
+		numerox = completarComZero(numerox, size);
 		
 		
 		String soma = concatenar(numero);
-		System.out.println(soma);
+		String soma2 = concatenar(numerox);
+		System.out.println("Resultado sequenc. : "+soma);
+		System.out.println("Resultado paralelo : "+soma2);
 	}
 	
 	
-	// MUITO CUIDADO QUANDO TRANSFORMA DE STRING PARA LONG
-	// POIS O QUE É 1012 PODE VIRAR 1 E 12, E O CERTO SERIA 1 E 012
+
 	
 	public static long[] separarNumeros(String mensagem, int size){
 		int tamanhoNum = mensagem.length();
@@ -100,9 +105,30 @@ public class arbitraryPrecision {
 		return numero;
 	}
 	
+	
+	public static long[] fazerSomaEmColunasParalelo(long[] numero1,long[] numero2){
+		
+		long[] numeroFinal;
+		long[] numeroParcial;
+		int maior;
+		if (numero1.length < numero2.length){
+			maior = 2;
+			numeroFinal = numero2;
+		}else{
+			maior = 1;
+			numeroFinal = numero1;
+		}
+		numeroParcial = Paralelo.somaParalelo(numero1,numero2,maior);
+		for (int i = 0; i < numeroParcial.length; i++){
+			numeroFinal[i] = numeroParcial[i];
+		}
+		return numeroFinal;
+	}
+	
 	public static long[] fazerSomaEmColunasSequencial(long[] numero1, long[] numero2){ //Sequencial, problema do 0 ainda
 		//System.out.println(numero1.length);
 		//System.out.println(numero2.length);
+		
 		long[] numeroFinal;
 		if (numero1.length < numero2.length){
 			numeroFinal = numero2;
