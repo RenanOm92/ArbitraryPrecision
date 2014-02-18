@@ -13,7 +13,11 @@ public class arbitraryPrecision {
 		System.out.println("Digite numero 2: ");
 		String st2 = teste.readLine();		
 				
-		int arquitetura = 64;
+		int arquitetura = 100;
+		if (arquitetura > 64){
+			System.out.println("Arquitetura maior que 64 bits, long do Java usa 64 bits, calculando como 64 bits ");
+			arquitetura = 64;
+		}
 		long numeroCasasDecimais = (long)Math.pow(2, arquitetura-1);
 	
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
@@ -33,7 +37,6 @@ public class arbitraryPrecision {
 		long[] numero1 = separarNumeros(st1, size);
 		long[] numero2 = separarNumeros(st2, size);
 		
-		
 		long tempoInicio = System.currentTimeMillis();
 		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
 		System.out.println("Tempo da soma sequencial: "+(System.currentTimeMillis()-tempoInicio));
@@ -42,11 +45,10 @@ public class arbitraryPrecision {
 		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
 		System.out.println("Tempo da soma paralelo em openCL: "+(System.currentTimeMillis()-tempoInicio));
 		
-		
-//		long tempoInicio = System.currentTimeMillis();
 		String[] numero = passarCarry(numeroParcial,size);
 		String[] numerox = passarCarry(numeroParcial2,size);
 //		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio));
+		
 		
 		
 //		tempoInicio = System.currentTimeMillis();
@@ -56,12 +58,13 @@ public class arbitraryPrecision {
 // 		Devido a transformada de string para long, o que era 100012 pode virar 100 | 12, 
 // 		podendo gerar inconsistencia	depois para realizar a concatenação.	
 // 		Então é necessário preencher com 0 os números que não tem o tamanho da coluna.	
+		
 		numero = completarComZero(numero, size);
 		numerox = completarComZero(numerox, size);
 		
-		
 		String soma = concatenar(numero);
 		String soma2 = concatenar(numerox);
+		
 		System.out.println("Resultado sequenc. : "+soma);
 		System.out.println("Resultado paralelo : "+soma2);
 	}
@@ -131,14 +134,21 @@ public class arbitraryPrecision {
 		
 		long[] numeroFinal;
 		if (numero1.length < numero2.length){
-			numeroFinal = numero2;
+			numeroFinal = new long[numero2.length];
+			for (int i = numero1.length; i < numero2.length; i++){
+				numeroFinal[i] = numero2[i];
+			}
+			
 			for (int i = 0; i < numero1.length; i++){
 				//System.out.print(numero1[i]+ " + "+numero2[i]+" = ");
 				numeroFinal[i] = numero1[i] + numero2[i];
 				//System.out.println(numeroFinal[i]);
 			}
 		}else{
-			numeroFinal = numero1;
+			numeroFinal = new long[numero1.length];
+			for (int i = numero2.length; i < numero1.length; i++){
+				numeroFinal[i] = numero1[i];
+			}
 			for (int i = 0; i < numero2.length; i++){
 				//System.out.print(numero1[i]+ " + "+numero2[i]+" = ");
 				numeroFinal[i] = numero1[i] + numero2[i];
@@ -158,6 +168,7 @@ public class arbitraryPrecision {
 		String[] numeroString = new String[numero.length];
 		for (int i = 0; i < numero.length; i++){
 			numeroString[i] = Long.toString(numero[i]);
+			
 			//System.out.println("number "+numeroString[i]);
 			if ((numeroString[i].length() > size) && (i < numero.length-1)){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
 				numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
