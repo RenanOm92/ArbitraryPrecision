@@ -1,4 +1,4 @@
-// Código desenvolvido por Renan Oliveira.
+// Codigo desenvolvido por Renan Oliveira.
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class arbitraryPrecision {
 		System.out.println("Digite numero 2: ");
 		String st2 = teste.readLine();		
 				
-		int arquitetura = 100;
+		int arquitetura = 64;
 		if (arquitetura > 64){
 			System.out.println("Arquitetura maior que 64 bits, long do Java usa 64 bits, calculando como 64 bits ");
 			arquitetura = 64;
@@ -22,10 +22,10 @@ public class arbitraryPrecision {
 	
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
 	
-//		Arquitetura que vou testar vai ser x10, 10 bits, numero maior é 1024, 
-//		então o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
+//		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
+//		entao o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
 //		e eu tenho que tirar 1 digito usando os decimais.
-//		Exemplo: Arquitetura suporta maior numero 1024 = 2^10, vou usar	cada número
+//		Exemplo: Arquitetura suporta maior numero 1024 = 2^10, vou usar	cada numero
 //		então até 512 = 2^9, 3 digitos, só que se eu separar em intervalos de 3 digitos,
 //		corre o risco de eu pegar números 999, que quando somados extrapolem o 1024
 //		que é o maior suportado pela máquina. Então vou pegar o número de digitos de
