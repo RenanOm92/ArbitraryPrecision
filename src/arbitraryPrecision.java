@@ -21,7 +21,7 @@ public class arbitraryPrecision {
 		long numeroCasasDecimais = (long)Math.pow(2, arquitetura-1);
 	
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
-	
+
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
 //		e eu tenho que tirar 1 digito usando os decimais.
@@ -32,14 +32,11 @@ public class arbitraryPrecision {
 //		(2^n-1) e tirar 1 digito. Assim sendo, o exemplo de 1024, separaria em intervalos
 //		de 2 dígitos.		
 		
-//		Arquitetura máxima suportada é 64x.
-		
-		long[] numero1 = separarNumeros(st1, size);
-		long[] numero2 = separarNumeros(st2, size);
-		
-		somar(numero1,numero2,size);
-		
-		multiplicar(numero1,numero2,size);
+//		Arquitetura máxima suportada é 64x.	
+
+		somar(st1,st1,size);
+
+		multiplicarSequencial(numero1,numero2,size);
 		
 
 	}
@@ -80,7 +77,10 @@ public class arbitraryPrecision {
 		return numero;
 	}
 	
-	public static void somar(long[] numero1, long[] numero2,int size){
+	public static void somar(String st1, String st2,int size){
+		
+		final long[] numero1 = separarNumeros(st1, size);
+		final long[] numero2 = separarNumeros(st2, size);
 
 //		SOMA SEQUENCIAL
 		long tempoInicio = System.currentTimeMillis();
@@ -100,32 +100,33 @@ public class arbitraryPrecision {
 		String soma2 = concatenar(numerox);		
 		System.out.println("Resultado paralelo : "+soma2);
 		
-//		SOMA DO PROPIO JAVA
+//		SOMA DO PROPIO JAVA -- fazer
 //		tempoInicio = System.currentTimeMillis();
 //		BigInteger a = new BigInteger()
 		
 	}
 		
 	public static long[] fazerSomaEmColunasParalelo(long[] numero1,long[] numero2){
-		
+
 		long[] numeroFinal;
 		long[] numeroParcial;
 		int maior;
 		if (numero1.length < numero2.length){
 			maior = 2;
-			numeroFinal = numero2;
+			numeroFinal = new long[numero2.length];
 		}else{
 			maior = 1;
-			numeroFinal = numero1;
+			numeroFinal = new long[numero1.length];
 		}
 		numeroParcial = Paralelo.somaParalelo(numero1,numero2,maior);
 		for (int i = 0; i < numeroParcial.length; i++){
 			numeroFinal[i] = numeroParcial[i];
 		}
+
 		return numeroFinal;
 	}
 	
-	public static long[] fazerSomaEmColunasSequencial(long[] numero1, long[] numero2){ //Sequencial, problema do 0 ainda
+	public static long[] fazerSomaEmColunasSequencial(long[] numero1, long[] numero2){
 		//System.out.println(numero1.length);
 		//System.out.println(numero2.length);
 		
@@ -204,8 +205,27 @@ public class arbitraryPrecision {
 		return saida.toString();
 	}	
 	
-	public static void multiplicar(long[] numero1, long[] numero2,int size){
+	// problema de overflow quando multiplciar valor proximo do limite do long?
+	public static void multiplicarSequencial(long[] numero1, long[] numero2,int size){
+		long resultado = 0;
 		
+		for (int i=0; i < numero2.length; i++){ // pega digito por digito do 2º numero
+			
+			long coluna = numero2[i];
+			int k = 10;
+			while (coluna > (k/10)){
+				long digito = coluna % k;
+				
+				for (int j=0; j < numero1.length; j++){
+					somar(digito,numero1[j],size); // corrigir la emcima, tá em string
+					resultado = (digito * numero1[j]) + resultado; // Ele tem que usar a soma de numeros gigantes...
+				}
+				k = k*10;
+				coluna = coluna - digito;
+			}
+
+		}
+		System.out.println("Resultado multiplicação sequenc. :"+resultado);
 	}
 	
 }
