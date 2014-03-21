@@ -37,68 +37,40 @@ public class arbitraryPrecision {
 		long[] numero1 = separarNumeros(st1, size);
 		long[] numero2 = separarNumeros(st2, size);
 		
-		long tempoInicio = System.currentTimeMillis();
-		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
-		System.out.println("Tempo da soma sequencial: "+(System.currentTimeMillis()-tempoInicio));
+		somar(numero1,numero2,size);
 		
-		tempoInicio = System.currentTimeMillis();
-		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
-		System.out.println("Tempo da soma paralelo em openCL: "+(System.currentTimeMillis()-tempoInicio));
+		multiplicar(numero1,numero2,size);
 		
-		String[] numero = passarCarry(numeroParcial,size);
-		String[] numerox = passarCarry(numeroParcial2,size);
-//		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio));
-		
-		
-		
-//		tempoInicio = System.currentTimeMillis();
-//		passarCarry2(numeroParcial,size);
-//		System.out.println("Tempo Total: "+(System.currentTimeMillis()-tempoInicio)); 
-		
-// 		Devido a transformada de string para long, o que era 100012 pode virar 100 | 12, 
-// 		podendo gerar inconsistencia	depois para realizar a concatenação.	
-// 		Então é necessário preencher com 0 os números que não tem o tamanho da coluna.	
-		
-		numero = completarComZero(numero, size);
-		numerox = completarComZero(numerox, size);
-		
-		String soma = concatenar(numero);
-		String soma2 = concatenar(numerox);
-		
-		System.out.println("Resultado sequenc. : "+soma);
-		System.out.println("Resultado paralelo : "+soma2);
-	}
-	
-	
 
-	
+	}
+
 	public static long[] separarNumeros(String mensagem, int size){
-		int tamanhoNum = mensagem.length();
+		int tamanhoNum = mensagem.length(); // Tamanho total do número
 		
 		int restoNum = tamanhoNum % size;		
 		int um = 0;
 		if (restoNum != 0)
 			um = 1;
 		
-		long[] numero = new long[( tamanhoNum / size)+ um];
+		long[] numero = new long[( tamanhoNum / size)+ um]; // Número de colunas
 		
 		char[] aux = new char[size];
 		String aux2 = new String();
 		
-		for (int i = 0; i < (tamanhoNum / size) ; i++){ // Talvez botar isso em openCl tb?
+		for (int i = 0; i < (tamanhoNum / size) ; i++){ // Faz o loop, percorrendo do fim do número (mensagem) até quase o inicio, separando em colunas, e bota no vetor de long.
 			int fim = mensagem.length()-(i * size);
 			int comeco = fim - size;
 			mensagem.getChars(comeco, fim, aux, 0); // Retorna um vetor de char com o intervalo
 			
 			aux2 = new String(aux); // Transforma de vetor de char para String
-			//System.out.println(i+": "+aux2);
+
 			numero[i] = Long.parseLong(aux2);	// E o vetor de string para long
 			//System.out.println(i+": "+numero[i]); // É eficiente? provavelmente não!
 		}		
 		
 		aux = new char[restoNum];
 		
-		if (restoNum != 0){ // Pega ultima parte do número
+		if (restoNum != 0){ // Pega primeira parte do número (mensagem) 
 				 mensagem.getChars(0, restoNum, aux, 0);
 				 aux2 = new String(aux);
 				 numero[numero.length-1] = Long.parseLong(aux2);
@@ -108,7 +80,32 @@ public class arbitraryPrecision {
 		return numero;
 	}
 	
-	
+	public static void somar(long[] numero1, long[] numero2,int size){
+
+//		SOMA SEQUENCIAL
+		long tempoInicio = System.currentTimeMillis();
+		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
+		System.out.println("Tempo da soma sequencial: "+(System.currentTimeMillis()-tempoInicio));
+		String[] numero = passarCarry(numeroParcial,size);
+		numero = completarComZero(numero, size);	
+		String soma = concatenar(numero);	
+		System.out.println("Resultado sequenc. : "+soma);	
+		
+//		SOMA PARALELO
+		tempoInicio = System.currentTimeMillis();
+		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
+		System.out.println("Tempo da soma paralelo em openCL: "+(System.currentTimeMillis()-tempoInicio));				
+		String[] numerox = passarCarry(numeroParcial2,size);
+		numerox = completarComZero(numerox, size);
+		String soma2 = concatenar(numerox);		
+		System.out.println("Resultado paralelo : "+soma2);
+		
+//		SOMA DO PROPIO JAVA
+//		tempoInicio = System.currentTimeMillis();
+//		BigInteger a = new BigInteger()
+		
+	}
+		
 	public static long[] fazerSomaEmColunasParalelo(long[] numero1,long[] numero2){
 		
 		long[] numeroFinal;
@@ -179,21 +176,9 @@ public class arbitraryPrecision {
 		return numeroString;
 	}
 
-//	public static void passarCarry2(long[] numero, int size){
-//		for (int i = 0; i < numero.length; i++){		
-//			if (qtdDigitos(numero[i]) > size){
-//				
-//			}
-//		}
-//	}
-//	
-//	public static int qtdDigitos (long n) {  
-//		n = Math.abs(n);  
-//	    if (n == 0) 
-//	    	return 1;  
-//	    else 
-//	    	return (int) (Math.log10 (n) + 1);   
-//	}
+//		Devido a transformada de string para long, o que era 100012 pode virar 100 | 12, 
+//		podendo gerar inconsistencia	depois para realizar a concatenação.	
+//		Então é necessário preencher com 0 os números que não tem o tamanho da coluna.
 	
 	public static String[] completarComZero(String[] numero, int size){
 		StringBuilder concatenador;
@@ -217,6 +202,10 @@ public class arbitraryPrecision {
 			saida.append(numero[i]);
 		}
 		return saida.toString();
+	}	
+	
+	public static void multiplicar(long[] numero1, long[] numero2,int size){
+		
 	}
 	
 }

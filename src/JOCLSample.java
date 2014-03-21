@@ -36,7 +36,8 @@ public class JOCLSample
      */
     public static void main(String args[])
     {
-        // Create input- and output data 
+    	long tempoInicio = System.currentTimeMillis();
+    	// Create input- and output data 
         int n = 10;
         float srcArrayA[] = new float[n];
         float srcArrayB[] = new float[n];
@@ -162,5 +163,6 @@ public class JOCLSample
         {
             System.out.println("Result: "+java.util.Arrays.toString(dstArray));
         }
+        System.out.println("openCL Execution time: "+(System.currentTimeMillis()-tempoInicio));
     }
 }
