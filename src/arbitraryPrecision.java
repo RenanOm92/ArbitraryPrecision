@@ -34,10 +34,9 @@ public class arbitraryPrecision {
 		
 //		Arquitetura máxima suportada é 64x.	
 
-		somar(st1,st1,size);
-
-		multiplicarSequencial(numero1,numero2,size);
+		somar(st1,st2,size);
 		
+		multiplicar(st1,st2,size);	
 
 	}
 
@@ -77,7 +76,7 @@ public class arbitraryPrecision {
 		return numero;
 	}
 	
-	public static void somar(String st1, String st2,int size){
+	public static String somar(String st1, String st2,int size){
 		
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
@@ -87,24 +86,65 @@ public class arbitraryPrecision {
 		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
 		System.out.println("Tempo da soma sequencial: "+(System.currentTimeMillis()-tempoInicio));
 		String[] numero = passarCarry(numeroParcial,size);
-		numero = completarComZero(numero, size);	
+		
+		for (int i = 0; i < numero.length-1; i++){
+			numero[i] = completarComZero(numero[i], size);
+		}
+		
 		String soma = concatenar(numero);	
 		System.out.println("Resultado sequenc. : "+soma);	
+		return soma;
 		
 //		SOMA PARALELO
-		tempoInicio = System.currentTimeMillis();
-		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
-		System.out.println("Tempo da soma paralelo em openCL: "+(System.currentTimeMillis()-tempoInicio));				
-		String[] numerox = passarCarry(numeroParcial2,size);
-		numerox = completarComZero(numerox, size);
-		String soma2 = concatenar(numerox);		
-		System.out.println("Resultado paralelo : "+soma2);
+//		tempoInicio = System.currentTimeMillis();
+//		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
+//		System.out.println("Tempo da soma paralelo em openCL: "+(System.currentTimeMillis()-tempoInicio));				
+//		String[] numerox = passarCarry(numeroParcial2,size);
+//		numerox = completarComZero(numerox, size);
+//		String soma2 = concatenar(numerox);		
+//		System.out.println("Resultado paralelo : "+soma2);
 		
 //		SOMA DO PROPIO JAVA -- fazer
 //		tempoInicio = System.currentTimeMillis();
 //		BigInteger a = new BigInteger()
 		
 	}
+	
+public static String somar(long st1, String st2,int size){
+		
+		final long[] numero1 = {st1};
+		final long[] numero2 = separarNumeros(st2, size);
+
+//		SOMA SEQUENCIAL
+		long tempoInicio = System.currentTimeMillis();
+		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
+		System.out.println("Tempo da soma sequencial: "+(System.currentTimeMillis()-tempoInicio));
+		String[] numero = passarCarry(numeroParcial,size);
+		
+		for (int i = 0; i < numero.length-1; i++){
+			numero[i] = completarComZero(numero[i], size);
+		}	
+		
+		String soma = concatenar(numero);	
+		System.out.println("Resultado sequenc. : "+soma);	
+		return soma;
+		
+		
+//		SOMA PARALELO
+//		tempoInicio = System.currentTimeMillis();
+//		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
+//		System.out.println("Tempo da soma paralelo em openCL: "+(System.currentTimeMillis()-tempoInicio));				
+//		String[] numerox = passarCarry(numeroParcial2,size);
+//		numerox = completarComZero(numerox, size);
+//		String soma2 = concatenar(numerox);		
+//		System.out.println("Resultado paralelo : "+soma2);
+		
+//		SOMA DO PROPIO JAVA -- fazer
+//		tempoInicio = System.currentTimeMillis();
+//		BigInteger a = new BigInteger()
+		
+	}
+	
 		
 	public static long[] fazerSomaEmColunasParalelo(long[] numero1,long[] numero2){
 
@@ -181,19 +221,17 @@ public class arbitraryPrecision {
 //		podendo gerar inconsistencia	depois para realizar a concatenação.	
 //		Então é necessário preencher com 0 os números que não tem o tamanho da coluna.
 	
-	public static String[] completarComZero(String[] numero, int size){
-		StringBuilder concatenador;
-		for (int i = 0; i < numero.length-1; i++){
-			if (numero[i].length() < size){
-				
-				concatenador = new StringBuilder();
-				for (int j = 0; j < size - numero[i].length(); j++){
-					concatenador.append("0");					
-				}
-				concatenador.append(numero[i]);
-				numero[i] = concatenador.toString();
+	public static String completarComZero(String numero, int size){
+		StringBuilder concatenador;	
+		if (numero.length() < size){
+			concatenador = new StringBuilder();
+			for (int j = 0; j < size - numero.length(); j++){
+				concatenador.append("0");					
 			}
+			concatenador.append(numero);
+			numero = concatenador.toString();
 		}
+		
 		return numero;
 	}
 	
@@ -206,26 +244,46 @@ public class arbitraryPrecision {
 	}	
 	
 	// problema de overflow quando multiplciar valor proximo do limite do long?
+	
+	public static void multiplicar (String st1, String st2, int size){
+		
+		final long[] numero1 = separarNumeros(st1, size);
+		final long[] numero2 = separarNumeros(st2, size);
+		
+		multiplicarSequencial(numero1, numero2, size);
+	}
+	
 	public static void multiplicarSequencial(long[] numero1, long[] numero2,int size){
-		long resultado = 0;
+		String[] resultadoParcial;
+		long[] multiplicacao = new long[size];
+		String resultado;
+		String resultadoMult = "0";
 		
 		for (int i=0; i < numero2.length; i++){ // pega digito por digito do 2º numero
 			
 			long coluna = numero2[i];
 			int k = 10;
-			while (coluna > (k/10)){
+			while (coluna >= (k/10)){
 				long digito = coluna % k;
 				
 				for (int j=0; j < numero1.length; j++){
-					somar(digito,numero1[j],size); // corrigir la emcima, tá em string
-					resultado = (digito * numero1[j]) + resultado; // Ele tem que usar a soma de numeros gigantes...
+					multiplicacao[j] = digito * numero1[j];
+//					passarCarry(multiplicacao, size);
+//					resultado = somar(multiplicacao,resultado,size);
+//					System.out.println(resultado);
+//					resultado = completarComZero(resultado,size);
 				}
+				resultadoParcial = passarCarry(multiplicacao, size); 
+				// Falta completar com 0 depois de passar o carry
+				resultado = concatenar(resultadoParcial);
+				// Esse "resultado" necessita adicionar 0 ao final de acordo com posição do digito.
+				resultadoMult = somar(resultado,resultadoMult,size);
 				k = k*10;
 				coluna = coluna - digito;
 			}
-
+			// Pensar e resolver nas colunas no dígito 2.
 		}
-		System.out.println("Resultado multiplicação sequenc. :"+resultado);
+		System.out.println("Resultado multiplicação sequenc. :"+resultadoMult);
 	}
 	
 }
