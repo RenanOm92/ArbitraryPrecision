@@ -22,6 +22,9 @@ public class arbitraryPrecision {
 	
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
 
+		// TESTE
+		size = 2;
+		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
 //		e eu tenho que tirar 1 digito usando os decimais.
@@ -34,7 +37,7 @@ public class arbitraryPrecision {
 		
 //		Arquitetura máxima suportada é 64x.	
 
-		somar(st1,st2,size);
+	//	somar(st1,st2,size);
 		
 		multiplicar(st1,st2,size);	
 
@@ -209,8 +212,11 @@ public static String somar(long st1, String st2,int size){
 			
 			//System.out.println("number "+numeroString[i]);
 			if ((numeroString[i].length() > size) && (i < numero.length-1)){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
+				
+				// estou pegando 1º posição da string, retorna char, transformo para string, de string para int.
+				numero[i+1] = numero[i+1] + (Integer.parseInt(String.valueOf(numeroString[i].charAt(0))));
 				numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
-				numero[i+1] = numero[i+1] + 1; // Carry passado
+				//numero[i+1] = numero[i+1] + 1; // Carry passado errado.
 				//System.out.println(numeroString[i]);
 			}	
 		}
@@ -255,16 +261,17 @@ public static String somar(long st1, String st2,int size){
 	
 	public static void multiplicarSequencial(long[] numero1, long[] numero2,int size){
 		String[] resultadoParcial;
-		long[] multiplicacao = new long[size];
+		long[] multiplicacao = new long[numero1.length];
 		String resultado;
 		String resultadoMult = "0";
+		int contadorGeral = 0;
 		
 		for (int i=0; i < numero2.length; i++){ // pega digito por digito do 2º numero
-			
+			System.out.println(numero2[i]);
 			long coluna = numero2[i];
-			int k = 10;
-			while (coluna >= (k/10)){
-				long digito = coluna % k;
+			
+			while (coluna >= 1){
+				long digito = coluna % 10;
 				
 				for (int j=0; j < numero1.length; j++){
 					multiplicacao[j] = digito * numero1[j];
@@ -273,17 +280,31 @@ public static String somar(long st1, String st2,int size){
 //					System.out.println(resultado);
 //					resultado = completarComZero(resultado,size);
 				}
-				resultadoParcial = passarCarry(multiplicacao, size); 
-				// Falta completar com 0 depois de passar o carry
+				resultadoParcial = passarCarry(multiplicacao, size);
+
+				for (int z = 0 ; z < resultadoParcial.length-1; z++){
+					resultadoParcial[z] = completarComZero(resultadoParcial[z], size);
+				}
+				
 				resultado = concatenar(resultadoParcial);
+				
+				StringBuilder aux = new StringBuilder();
+				aux.append(resultado);
+				for (int k = 0 ; k < contadorGeral ; k++){
+					aux.append("0");
+				}
+				resultado = aux.toString();
+				
+				System.out.println(resultado +" + "+ resultadoMult );
 				// Esse "resultado" necessita adicionar 0 ao final de acordo com posição do digito.
 				resultadoMult = somar(resultado,resultadoMult,size);
-				k = k*10;
-				coluna = coluna - digito;
+				
+				coluna = coluna / 10;
+				contadorGeral++;
 			}
 			// Pensar e resolver nas colunas no dígito 2.
 		}
-		System.out.println("Resultado multiplicação sequenc. :"+resultadoMult);
+		System.out.println("Resultado multiplicação sequenc. : "+resultadoMult);
 	}
 	
 }
