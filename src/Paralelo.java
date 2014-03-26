@@ -29,18 +29,29 @@ public class Paralelo
         "}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
-    	
-        long srcArrayA[] = numero1;
-        long srcArrayB[] = numero2;
-        long dstArray[];
+         
         int numeroDeWork;
+        long[] srcArrayA;
+        long[] srcArrayB;
+        
         
         if (maior == 1){
-        	numeroDeWork = numero2.length;
-        }else{
         	numeroDeWork = numero1.length;
+        	srcArrayA = numero1;
+        	srcArrayB = new long[numeroDeWork];
+        	for (int i = 0; i < numero2.length; i++){
+        		srcArrayB[i] = numero2[i];
+        	}
+        }else{
+        	numeroDeWork = numero2.length;
+        	srcArrayB = numero2;
+        	srcArrayA = new long[numeroDeWork];
+        	for (int i = 0; i < numero1.length; i++){
+        		srcArrayA[i] = numero1[i];
+        	}
         }
-        dstArray = new long[numeroDeWork];
+
+        long[] dstArray = new long[numeroDeWork];
      
         Pointer srcA = Pointer.to(srcArrayA);
         Pointer srcB = Pointer.to(srcArrayB);

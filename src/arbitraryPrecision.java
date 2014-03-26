@@ -23,7 +23,7 @@ public class arbitraryPrecision {
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
 
 		// TESTE
-		size = 2;
+		//size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -44,8 +44,8 @@ public class arbitraryPrecision {
 		
 		resultadoSoma = somar(st1,st2,size);
 		
-		System.out.println("Tempo da soma sequencial: "+(System.currentTimeMillis()-tempoInicio));
-		System.out.println("Resultado da soma sequenc. : "+resultadoSoma);	
+		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio));
+		System.out.println("Resultado da soma : "+resultadoSoma);	
 		
 		
 		
@@ -103,24 +103,25 @@ public class arbitraryPrecision {
 
 //		SOMA SEQUENCIAL
 		
-		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);	
-		String[] numero = passarCarry(numeroParcial,size);		
-		for (int i = 0; i < numero.length-1; i++){
-			numero[i] = completarComZero(numero[i], size);
-		}
-		String soma = concatenar(numero);	
-		return soma;
+//		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);	
+//		String[] numero = passarCarry(numeroParcial,size);		
+//		for (int i = 0; i < numero.length-1; i++){
+//			numero[i] = completarComZero(numero[i], size);
+//		}
+//		String soma = concatenar(numero);	
+//		return soma;
 
 		
 //		SOMA PARALELO
 		
-//		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);			
-//		String[] numerox = passarCarry(numeroParcial2,size);		
-//		for (int i = 0; i < numerox.length-1; i++){
-//			numerox[i] = completarComZero(numerox[i], size);
-//		}
-//		String soma2 = concatenar(numerox);
-//		return soma2;
+		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
+	//	System.out.println(numeroParcial2[1]);
+		String[] numerox = passarCarry(numeroParcial2,size);		
+		for (int i = 0; i < numerox.length-1; i++){
+			numerox[i] = completarComZero(numerox[i], size);
+		}
+		String soma2 = concatenar(numerox);
+		return soma2;
 
 		
 //		SOMA DO PROPIO JAVA -- fazer
