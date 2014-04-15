@@ -18,7 +18,7 @@ public class Paralelo
     /**
      * The source code of the OpenCL program to execute
      */
-    private static String programSource =
+    private static String programSourceSoma =
         "__kernel void "+
         "somaParaleloKernel(__global const long *a,"+
         "             __global const long *b,"+
@@ -26,6 +26,16 @@ public class Paralelo
         "{"+
         "    int gid = get_global_id(0);"+
         "    c[gid] = a[gid] + b[gid];"+
+        "}";
+    
+    private static String programSourceMult =
+        "__kernel void "+
+        "multiplicacaoParaleloKernel(__global const long *a,"+
+        "             __global const long *b,"+
+        "             __global long *c)"+
+        "{"+
+        "    int gid = get_global_id(0);"+
+        "    c[gid] = a[gid] * b[gid];"+
         "}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
@@ -57,12 +67,12 @@ public class Paralelo
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"somaParaleloKernel");
         
         return dstArray;
     }
     
-    public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork){
+    public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork, String operacao){
     	
     	// The platform, device type and device number
         // that will be used
@@ -118,15 +128,22 @@ public class Paralelo
             CL_MEM_READ_WRITE, 
             Sizeof.cl_long * numeroDeWork, null, null);
         
-        // Create the program from the source code
-        cl_program program = clCreateProgramWithSource(context,
-            1, new String[]{ programSource }, null, null);
+        cl_program program;
         
-        // Build the program
+        if (operacao == "somaParaleloKernel"){
+        	program = clCreateProgramWithSource(context,
+                    1, new String[]{ programSourceSoma }, null, null);
+        }
+        else{  
+        	program = clCreateProgramWithSource(context,
+                    1, new String[]{ programSourceMult }, null, null);
+        }
+       
+		// Build the program
         clBuildProgram(program, 0, null, null, null, null);
         
         // Create the kernel
-        cl_kernel kernel = clCreateKernel(program, "somaParaleloKernel", null);
+        cl_kernel kernel = clCreateKernel(program, operacao, null);
         
         // Set the arguments for the kernel
         clSetKernelArg(kernel, 0, 

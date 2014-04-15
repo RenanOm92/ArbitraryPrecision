@@ -23,7 +23,7 @@ public class arbitraryPrecision {
 		int size = (Long.toString(numeroCasasDecimais).length())-1;
 
 		// TESTE
-		//size = 2;
+		size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -144,6 +144,8 @@ public class arbitraryPrecision {
 		}
 		numeroParcial = Paralelo.somaParalelo(numero1,numero2,maior);
 		for (int i = 0; i < numeroParcial.length; i++){
+			System.out.println(numeroParcial[i]);
+			System.out.println(numeroFinal[i]);
 			numeroFinal[i] = numeroParcial[i];
 		}
 
@@ -245,35 +247,36 @@ public class arbitraryPrecision {
 		String resultadoMult = "0";
 		int contadorGeral = 0;
 		
-		for (int i=0; i < numero2.length; i++){ // pega digito por digito do multiplicador
+		for (int i=0; i < numero2.length; i++){ // pega coluna por coluna do multiplicador
 
 			long coluna = numero2[i];
 			
-			while (coluna >= 1){
-				long digito = coluna % 10;
+			while (coluna >= 1){ // itera digito por digito do multiplicador
+				long digito = coluna % 10; // pega o ultimo digito
 				
 				for (int j=0; j < numero1.length; j++){
-					multiplicacao[j] = digito * numero1[j];
+					multiplicacao[j] = digito * numero1[j]; // multiplica o digito pelo numero 1
 				}
-				resultadoParcial = passarCarry(multiplicacao, size);
+				resultadoParcial = passarCarry(multiplicacao, size); // passa o carry entre os numeros
 
 				for (int z = 0 ; z < resultadoParcial.length-1; z++){
-					resultadoParcial[z] = completarComZero(resultadoParcial[z], size);
+					resultadoParcial[z] = completarComZero(resultadoParcial[z], size); // completa com 0
 				}
 				
-				resultado = concatenar(resultadoParcial);
+				resultado = concatenar(resultadoParcial); // concatena encontrando a mult. do digito pelo numero 1
 				
 				StringBuilder aux = new StringBuilder();
 				aux.append(resultado);
-				for (int k = 0 ; k < contadorGeral ; k++){
+				for (int k = 0 ; k < contadorGeral ; k++){ // coloca X números de 0 ao final da multiplicacao encontrada
 					aux.append("0");
 				}
 				resultado = aux.toString();
 				
 				//System.out.println(resultado +" + "+ resultadoMult );
 
-				resultadoMult = somar(resultado,resultadoMult,size);
-				
+				resultadoMult = somar(resultado,resultadoMult,size); // Soma a multiplicacao com a soma total ja encontrada
+																	// Necessario utilizar soma de bignums pois a soma total
+																	// pode extrapolar o limite máximo que o tipo long em java armazena
 				coluna = coluna / 10;
 				contadorGeral++;
 			}
@@ -281,6 +284,10 @@ public class arbitraryPrecision {
 		}
 		return resultadoMult;
 		
+	}
+	
+	public static String multiplicarParalelo(long[] numero1, long[] numero2, int size){
+		String[] resultadoParcial;
 	}
 	
 }
