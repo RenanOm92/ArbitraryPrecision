@@ -4,11 +4,12 @@
  * Copyright 2009 Marco Hutter - http://www.jocl.org/
  */
 
-
-
 import static org.jocl.CL.*;
 
+
 import org.jocl.*;
+
+//Code to verify the openCL and the JOCL
 
 /**
  * A small JOCL sample.
