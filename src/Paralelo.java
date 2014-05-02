@@ -48,7 +48,10 @@ public class Paralelo
     		"{" +
     		" int x = get_global_id(0);" +
     		" int y = get_global_id(1);" +
-    		" c[0] = a[x] * b[y];" +
+    		//" for (int i = 0; i < 10; i++){" +
+    		" int i = 0;" +
+    		" 	c[x+(menor entre A e B*y)] = a[x] * b[y];" + //errado
+    		//"}" +
     		"}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
@@ -97,13 +100,14 @@ public class Paralelo
         Pointer srcA = Pointer.to(srcArrayA);
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
-        System.out.println(srcArrayA[0]);
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"teste");
+        Pointer pointerSize = Pointer.to(new int[]{numeroDeWork});
+        //System.out.println(srcArrayA[0]);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"teste",numero1.length,numero2.length);
         
         return dstArray;
     }
     
-    public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork, String operacao){
+    public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork, String operacao,int a, int b){
     	
     	// The platform, device type and device number
         // that will be used
@@ -148,7 +152,7 @@ public class Paralelo
             clCreateCommandQueue(context, device, 0, null);
 
         // Allocate the memory objects for the input- and output data
-        cl_mem memObjects[] = new cl_mem[3];
+        cl_mem memObjects[] = new cl_mem[4];
         memObjects[0] = clCreateBuffer(context, 
             CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
             Sizeof.cl_long * numeroDeWork, srcA, null);
@@ -159,6 +163,10 @@ public class Paralelo
             CL_MEM_READ_WRITE, 
             Sizeof.cl_long * numeroDeWork, null, null);
         
+//        memObjects[3] = clCreateBuffer(context, 
+//                CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+//                Sizeof.cl_long * numeroDeWork, pointerSize, null);
+//        
         cl_program program;
         
 //        if (operacao == "somaParaleloKernel"){
@@ -186,9 +194,11 @@ public class Paralelo
             Sizeof.cl_mem, Pointer.to(memObjects[1]));
         clSetKernelArg(kernel, 2, 
             Sizeof.cl_mem, Pointer.to(memObjects[2]));
-        
+//        clSetKernelArg(kernel, 3, 
+//            Sizeof.cl_mem, Pointer.to(memObjects[3]));
+//        
         // Set the work-item dimensions
-        long global_work_size[] = new long[]{1,1};
+        long global_work_size[] = new long[]{a,b};
         long local_work_size[] = new long[]{1,1};
         
         // Execute the kernel
