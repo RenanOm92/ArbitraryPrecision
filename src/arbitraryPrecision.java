@@ -37,26 +37,34 @@ public class arbitraryPrecision {
 		
 //		Arquitetura máxima suportada é 64x.	
 
+//		
+//		long[] a = new long [10];
+//		long[] b = Paralelo.somaParalelo(a, a, 1);
+//		
+//		for (int i = 0; i < b.length; i++){
+//			System.out.println(b[i]);
+//		}
 		
-		String resultadoSoma;
+//		String resultadoSoma;
+//		
+//		long tempoInicio = System.currentTimeMillis();
+//		
+//		resultadoSoma = somar(st1,st2,size);
+//		
+//		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio));
+//		System.out.println("Resultado da soma : "+resultadoSoma);	
+//		
+//		
+//		
+		String resultadoMult;
 		
 		long tempoInicio = System.currentTimeMillis();
 		
-		resultadoSoma = somar(st1,st2,size);
-		
-		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio));
-		System.out.println("Resultado da soma : "+resultadoSoma);	
-		
-		
-		
-		String resultadoMult;
-		
-		tempoInicio = System.currentTimeMillis();
-		
-		resultadoMult = multiplicar(st1,st2,size);
+		//resultadoMult = multiplicar(st1,st2,size);
+		multiplicar(st1,st2,size);
 		
 		System.out.println("Tempo da multiplicação sequencial : "+(System.currentTimeMillis()-tempoInicio));
-		System.out.println("Resultado multiplicação sequenc. : "+resultadoMult);
+		//System.out.println("Resultado multiplicação sequenc. : "+resultadoMult);
 
 	}
 
@@ -232,12 +240,13 @@ public class arbitraryPrecision {
 		return saida.toString();
 	}	
 	
-	public static String multiplicar (String st1, String st2, int size){
+	public static void multiplicar (String st1, String st2, int size){
 		
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
 		
-		return multiplicarSequencial(numero1, numero2, size);
+		//return multiplicarSequencial(numero1, numero2, size);
+		multiplicarParalelo(numero1, numero2, size);
 	}
 	
 	public static String multiplicarSequencial(long[] numero1, long[] numero2,int size){
@@ -286,8 +295,12 @@ public class arbitraryPrecision {
 		
 	}
 	
-	public static String multiplicarParalelo(long[] numero1, long[] numero2, int size){
+	public static void multiplicarParalelo(long[] numero1, long[] numero2, int size){
 		String[] resultadoParcial;
+		long[] saida = Paralelo.multiplicaParalelo(numero1, numero2);
+		for (int i = 0; i < saida.length; i++){
+			System.out.println(saida[i]);
+		}
 	}
 	
 }
