@@ -296,11 +296,34 @@ public class arbitraryPrecision {
 	}
 	
 	public static void multiplicarParalelo(long[] numero1, long[] numero2, int size){
-		String[] resultadoParcial;
-		long[] saida = Paralelo.multiplicaParalelo(numero1, numero2);
+		
+		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
+		
+		int contador;
+		for (int i = 0; i < numero2.length; i++){
+			contador = i * numero1.length;
+			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
+		}
+		
 		for (int i = 0; i < saida.length; i++){
 			System.out.println(saida[i]);
 		}
 	}
+	
+	public static String[] passarCarry(long[] numero, int size, int comeco, int fim){
+		String[] numeroString = new String[fim - comeco + 1];
+		for (int i = comeco; i <= fim; i++){
+			numeroString[i] = Long.toString(numero[i]);
+
+			if ((numeroString[i].length() > size) && (i < fim )){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
+				
+				// estou pegando 1º posição da string, retorna char, transformo para string, de string para int.
+				numero[i+1] = numero[i+1] + (Integer.parseInt(String.valueOf(numeroString[i].charAt(0))));
+				numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
+			}	
+		}
+		return numeroString;
+	}
+	
 	
 }

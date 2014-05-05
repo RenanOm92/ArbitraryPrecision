@@ -27,7 +27,7 @@ public class Paralelo
         "    int gid = get_global_id(0);"+
         "    c[gid] = a[gid] + b[gid];"+
         "}";
-    
+    //	TEM QUE REFAZER -- MULTIPLICAR DIGITO POR DIGITO, E NÃO COLUNA TODA DO NUMERO 2
     private static String programSourceMult =
         "__kernel void "+
         "multiplicacaoParaleloKernel(__global const long *numero1,"+
