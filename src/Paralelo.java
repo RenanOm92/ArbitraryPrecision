@@ -30,28 +30,14 @@ public class Paralelo
     
     private static String programSourceMult =
         "__kernel void "+
-        "multiplicacaoParaleloKernel(__global const long *a,"+
-        "             __global const long *b,"+
-        "             __global long *c)"+
-        "{"+
-        "    int gid0 = get_global_id(0);"+
-        "    int gid1 = get_global_id(1);"+
-        "    for (int i = 0; i < size1 * size2; i++){"+
-        "    	c[i] = a[gid0] * b[gid1];"+
-        "}";
-    
-    private static String teste = 
-    		"__kernel void " +
-    		"teste(__global const long *a,"+
-    		"      __global const long *b,"+
-    		"      __global long* c)" +
+        "multiplicacaoParaleloKernel(__global const long *numero1,"+
+    		"      __global const long *numero2,"+
+    		"	   __const int tamanhoNumero1,"+		
+    		"      __global long* saida)" +
     		"{" +
     		" int x = get_global_id(0);" +
     		" int y = get_global_id(1);" +
-    		//" for (int i = 0; i < 10; i++){" +
-    		" int i = 0;" +
-    		" 	c[x+(menor entre A e B*y)] = a[x] * b[y];" + //errado
-    		//"}" +
+    		" saida[x+(tamanhoNumero1*y)] = numero1[x] * numero2[y];" + 
     		"}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
@@ -91,7 +77,10 @@ public class Paralelo
     public static long[] multiplicaParalelo(long[]numero1, long[] numero2){
         
         int numeroDeWork;
-        numeroDeWork = numero1.length*numero2.length;
+        numeroDeWork = numero1.length * numero2.length;
+        
+        int tamanhoNumero1 = numero1.length;
+        int tamanhoNumero2 = numero2.length;
         
         long[] srcArrayA = numero1;
         long[] srcArrayB = numero2;      
@@ -100,14 +89,13 @@ public class Paralelo
         Pointer srcA = Pointer.to(srcArrayA);
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
-        Pointer pointerSize = Pointer.to(new int[]{numeroDeWork});
-        //System.out.println(srcArrayA[0]);
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"teste",numero1.length,numero2.length);
+
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernel",tamanhoNumero1,tamanhoNumero2);
         
         return dstArray;
     }
     
-    public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork, String operacao,int a, int b){
+    public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork, String operacao,int tamanhoNumero1, int tamanhoNumero2){
     	
     	// The platform, device type and device number
         // that will be used
@@ -152,7 +140,7 @@ public class Paralelo
             clCreateCommandQueue(context, device, 0, null);
 
         // Allocate the memory objects for the input- and output data
-        cl_mem memObjects[] = new cl_mem[4];
+        cl_mem memObjects[] = new cl_mem[3];
         memObjects[0] = clCreateBuffer(context, 
             CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
             Sizeof.cl_long * numeroDeWork, srcA, null);
@@ -163,23 +151,16 @@ public class Paralelo
             CL_MEM_READ_WRITE, 
             Sizeof.cl_long * numeroDeWork, null, null);
         
-//        memObjects[3] = clCreateBuffer(context, 
-//                CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-//                Sizeof.cl_long * numeroDeWork, pointerSize, null);
-//        
         cl_program program;
         
-//        if (operacao == "somaParaleloKernel"){
-//        	program = clCreateProgramWithSource(context,
-//                    1, new String[]{ programSourceSoma }, null, null);
-//        }
-//        else{  
-//        	program = clCreateProgramWithSource(context,
-//                    1, new String[]{ programSourceMult }, null, null);
-//        }
-        
-        program = clCreateProgramWithSource(context,
-                1, new String[]{ teste }, null, null);
+        if (operacao == "somaParaleloKernel"){
+        	program = clCreateProgramWithSource(context,
+                    1, new String[]{ programSourceSoma }, null, null);
+        }
+        else{
+        	program = clCreateProgramWithSource(context,
+                    1, new String[]{ programSourceMult }, null, null);
+        }
        
 		// Build the program
         clBuildProgram(program, 0, null, null, null, null);
@@ -193,12 +174,12 @@ public class Paralelo
         clSetKernelArg(kernel, 1, 
             Sizeof.cl_mem, Pointer.to(memObjects[1]));
         clSetKernelArg(kernel, 2, 
+            Sizeof.cl_mem, Pointer.to(new int[]{tamanhoNumero1}));
+        clSetKernelArg(kernel, 3, 
             Sizeof.cl_mem, Pointer.to(memObjects[2]));
-//        clSetKernelArg(kernel, 3, 
-//            Sizeof.cl_mem, Pointer.to(memObjects[3]));
-//        
+      
         // Set the work-item dimensions
-        long global_work_size[] = new long[]{a,b};
+        long global_work_size[] = new long[]{tamanhoNumero1,tamanhoNumero2};
         long local_work_size[] = new long[]{1,1};
         
         // Execute the kernel
