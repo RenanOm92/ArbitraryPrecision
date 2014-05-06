@@ -3,6 +3,9 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class arbitraryPrecision {
 	public static void main (String []args) throws IOException{
@@ -245,8 +248,24 @@ public class arbitraryPrecision {
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
 		
+		List<Long> listaAbstrataNumero2 = new ArrayList<Long>();
+				
+		for (int i=0; i < numero2.length; i++){ // pega coluna por coluna do multiplicador (numero2)
+			
+			long coluna = numero2[i];
+			
+			while (coluna >= 1){  // itera digito por digito do multiplicador
+				
+				long digito = coluna % 10; // pega o ultimo digito
+				
+				listaAbstrataNumero2.add(digito); // adiciona digito numa lista abstrata 
+			}
+		}
+		
+		long[] numero2PorDigito = convertLong(listaAbstrataNumero2);
+		
 		//return multiplicarSequencial(numero1, numero2, size);
-		multiplicarParalelo(numero1, numero2, size);
+		multiplicarParalelo(numero1, numero2PorDigito, size);
 	}
 	
 	public static String multiplicarSequencial(long[] numero1, long[] numero2,int size){
@@ -261,7 +280,8 @@ public class arbitraryPrecision {
 			long coluna = numero2[i];
 			
 			while (coluna >= 1){ // itera digito por digito do multiplicador
-				long digito = coluna % 10; // pega o ultimo digito
+								
+				long digito = coluna % 10; // pega o ultimo digito				
 				
 				for (int j=0; j < numero1.length; j++){
 					multiplicacao[j] = digito * numero1[j]; // multiplica o digito pelo numero 1
@@ -305,8 +325,8 @@ public class arbitraryPrecision {
 			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
 		}
 		
-		for (int i = 0; i < saida.length; i++){
-			System.out.println(saida[i]);
+		for (int i = 0; i < resultadoMultParalelo.length; i++){
+			System.out.println(resultadoMultParalelo);
 		}
 	}
 	
@@ -325,5 +345,16 @@ public class arbitraryPrecision {
 		return numeroString;
 	}
 	
+	
+	public static long[] convertLong(List<Long> lista){
+		
+	    long[] numeroPorDigito = new long[lista.size()];
+	    Iterator<Long> iterator = lista.iterator();
+	    for (int i = 0; i < numeroPorDigito.length; i++){
+	    	
+	        numeroPorDigito[i] = iterator.next().intValue();
+	    }
+	    return numeroPorDigito;
+	}
 	
 }
