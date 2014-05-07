@@ -14,7 +14,7 @@ import org.jocl.*;
  * Using JOCL to sum in parallel
  */
 public class Paralelo
-{
+{ // É HEXAAAAAAAAAAAAAAAAAA
     /**
      * The source code of the OpenCL program to execute
      */

@@ -17,19 +17,18 @@ public class arbitraryPrecision {
 		String st2 = teste.readLine();		
 				
 		int arquitetura = 64;
-		if (arquitetura > 64){
-			System.out.println("Arquitetura maior que 64 bits, long do Java usa 64 bits, calculando como 64 bits ");
-			arquitetura = 64;
-		}
-		long numeroCasasDecimais = (long)Math.pow(2, arquitetura-1);
-	
-		int size = (Long.toString(numeroCasasDecimais).length())-1;
+		
+		int size;
+		
+		size = definirTamanhoColunas(arquitetura,"soma");
 
+		size = definirTamanhoColunas(arquitetura,"multiplicacao");
+		
 		// TESTE
 		size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
-//		entao o numero maximo vai usar 9 bits: 512, somando eles chegam a 1024;
+//		entao o numero maximo pra soma vai usar 9 bits: 512, somando eles chegam a 1024;
 //		e eu tenho que tirar 1 digito usando os decimais.
 //		Exemplo: Arquitetura suporta maior numero 1024 = 2^10, vou usar	cada numero
 //		então até 512 = 2^9, 3 digitos, só que se eu separar em intervalos de 3 digitos,
@@ -39,14 +38,6 @@ public class arbitraryPrecision {
 //		de 2 dígitos.		
 		
 //		Arquitetura máxima suportada é 64x.	
-
-//		
-//		long[] a = new long [10];
-//		long[] b = Paralelo.somaParalelo(a, a, 1);
-//		
-//		for (int i = 0; i < b.length; i++){
-//			System.out.println(b[i]);
-//		}
 		
 //		String resultadoSoma;
 //		
@@ -62,13 +53,26 @@ public class arbitraryPrecision {
 		String resultadoMult;
 		
 		long tempoInicio = System.currentTimeMillis();
-		
+		System.out.println(0x10 * 0x12);
 		//resultadoMult = multiplicar(st1,st2,size);
 		multiplicar(st1,st2,size);
 		
 		System.out.println("Tempo da multiplicação sequencial : "+(System.currentTimeMillis()-tempoInicio));
 		//System.out.println("Resultado multiplicação sequenc. : "+resultadoMult);
 
+	}
+	
+	public static int definirTamanhoColunas(int arquitetura, String operacao){
+		if (operacao == "soma"){
+			long numeroCasasDecimais = (long)Math.pow(2, arquitetura-1);
+			int size = (Long.toString(numeroCasasDecimais).length())-1;
+			return size;
+		}
+		else {
+			long numeroCasasDecimais = (long)Math.pow(2, arquitetura/2);
+			int size = (Long.toString(numeroCasasDecimais).length())-1;
+			return size;
+		}
 	}
 
 	public static long[] separarNumeros(String mensagem, int size){
@@ -248,24 +252,8 @@ public class arbitraryPrecision {
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
 		
-		List<Long> listaAbstrataNumero2 = new ArrayList<Long>();
-				
-		for (int i=0; i < numero2.length; i++){ // pega coluna por coluna do multiplicador (numero2)
-			
-			long coluna = numero2[i];
-			
-			while (coluna >= 1){  // itera digito por digito do multiplicador
-				
-				long digito = coluna % 10; // pega o ultimo digito
-				
-				listaAbstrataNumero2.add(digito); // adiciona digito numa lista abstrata 
-			}
-		}
-		
-		long[] numero2PorDigito = convertLong(listaAbstrataNumero2);
-		
 		//return multiplicarSequencial(numero1, numero2, size);
-		multiplicarParalelo(numero1, numero2PorDigito, size);
+		multiplicarParalelo(numero1, numero2, size);
 	}
 	
 	public static String multiplicarSequencial(long[] numero1, long[] numero2,int size){
@@ -319,14 +307,14 @@ public class arbitraryPrecision {
 		
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
-		int contador;
-		for (int i = 0; i < numero2.length; i++){
-			contador = i * numero1.length;
-			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
-		}
+//		int contador;
+//		for (int i = 0; i < numero2.length; i++){
+//			contador = i * numero1.length;
+//			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
+//		}
 		
 		for (int i = 0; i < resultadoMultParalelo.length; i++){
-			System.out.println(resultadoMultParalelo);
+			System.out.println(resultadoMultParalelo[i]);
 		}
 	}
 	
