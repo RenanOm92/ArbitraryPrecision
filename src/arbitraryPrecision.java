@@ -23,7 +23,7 @@ public class arbitraryPrecision {
 		size = definirTamanhoColunas(arquitetura,"soma");
 
 		size = definirTamanhoColunas(arquitetura,"multiplicacao");
-		
+
 		// TESTE
 		size = 2;
 		
@@ -51,9 +51,9 @@ public class arbitraryPrecision {
 //		
 //		
 		String resultadoMult;
-		
+		//System.out.println(0x163 * 0x2);
 		long tempoInicio = System.currentTimeMillis();
-		System.out.println(0x10 * 0x12);
+		
 		//resultadoMult = multiplicar(st1,st2,size);
 		multiplicar(st1,st2,size);
 		
@@ -69,8 +69,9 @@ public class arbitraryPrecision {
 			return size;
 		}
 		else {
-			long numeroCasasDecimais = (long)Math.pow(2, arquitetura/2);
-			int size = (Long.toString(numeroCasasDecimais).length())-1;
+			long numeroCasasDecimais = (long)Math.pow(2, arquitetura/2) - 1;
+			int size = (Long.toHexString(numeroCasasDecimais).length());
+			
 			return size;
 		}
 	}
@@ -95,7 +96,8 @@ public class arbitraryPrecision {
 			
 			aux2 = new String(aux); // Transforma de vetor de char para String
 
-			numero[i] = Long.parseLong(aux2);	// E o vetor de string para long
+			numero[i] = Long.parseLong(aux2,16);	// E o vetor de string para long
+			//numero[i] = 
 			//System.out.println(i+": "+numero[i]); // É eficiente? provavelmente não!
 		}		
 		
@@ -104,7 +106,7 @@ public class arbitraryPrecision {
 		if (restoNum != 0){ // Pega primeira parte do número (mensagem) 
 				 mensagem.getChars(0, restoNum, aux, 0);
 				 aux2 = new String(aux);
-				 numero[numero.length-1] = Long.parseLong(aux2);
+				 numero[numero.length-1] = Long.parseLong(aux2,16);
 				 //System.out.println(numero[numero.length-1]);
 		}
 		

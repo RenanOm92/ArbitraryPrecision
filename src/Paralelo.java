@@ -27,7 +27,7 @@ public class Paralelo
         "    int gid = get_global_id(0);"+
         "    c[gid] = a[gid] + b[gid];"+
         "}";
-    //	TEM QUE REFAZER -- MULTIPLICAR DIGITO POR DIGITO, E NÃO COLUNA TODA DO NUMERO 2
+   
     private static String programSourceMult =
         "__kernel void "+
         "multiplicacaoParaleloKernel(__global const long *numero1,"+
@@ -37,7 +37,17 @@ public class Paralelo
     		"{" +
     		" int x = get_global_id(0);" +
     		" int y = get_global_id(1);" +
-    		" saida[x+(tamanhoNumero1*y)] = numero1[x] * numero2[y];" + 
+    		" long aux,aux2,aux3; " +
+    		" aux = numero1[x] * numero2[y];" + 
+    		" aux2 = aux & 0xFF;" +
+    		" aux3 = aux >> 8;" +
+    		" saida[x+y] = aux2; " +
+    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
+    		
+    		//" aux = numero1[x] * numero2[y];" +
+    		//" saida[x+(tamanhoNumero1*y)] = aux; " +
+    		//" printf(\"%lu\",aux);" +
+    		//" saida[x+(tamanhoNumero1*y)] = numero1[x] * numero2[y];" + 
     		"}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
@@ -77,7 +87,7 @@ public class Paralelo
     public static long[] multiplicaParalelo(long[]numero1, long[] numero2){
         
         int numeroDeWork;
-        numeroDeWork = numero1.length * numero2.length;
+        numeroDeWork = numero1.length + numero2.length;
         
         int tamanhoNumero1 = numero1.length;
         int tamanhoNumero2 = numero2.length;
