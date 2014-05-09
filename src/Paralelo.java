@@ -28,19 +28,22 @@ public class Paralelo
         "    c[gid] = a[gid] + b[gid];"+
         "}";
    
-    private static String programSourceMult =
+    private static String programSourceMultHexadec =
         "__kernel void "+
-        "multiplicacaoParaleloKernel(__global const long *numero1,"+
+        "multiplicacaoParaleloKernelHexadec(__global const long *numero1,"+
     		"      __global const long *numero2,"+
     		"	   __const int tamanhoNumero1,"+		
     		"      __global long* saida)" +
     		"{" +
     		" int x = get_global_id(0);" +
     		" int y = get_global_id(1);" +
+    		//" long *saida2 = {0};" +
     		" long aux,aux2,aux3; " +
+    		
     		" aux = numero1[x] * numero2[y];" + 
     		" aux2 = aux & 0xFF;" +
     		" aux3 = aux >> 8;" +
+    		
     		" saida[x+y] = aux2; " +
     		" saida[x+y+1] = saida[x+y+1] + aux3; " +
     		
@@ -48,6 +51,34 @@ public class Paralelo
     		//" saida[x+(tamanhoNumero1*y)] = aux; " +
     		//" printf(\"%lu\",aux);" +
     		//" saida[x+(tamanhoNumero1*y)] = numero1[x] * numero2[y];" + 
+    		"}";
+    
+    private static String programSourceMultDec =
+        "__kernel void "+
+        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
+    		"      __global const long *numero2,"+
+    		"	   __const int tamanhoNumero1,"+		
+    		"      __global long* saida)" +
+    		"{" +
+    		
+    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
+    		" 		saida[i] = 0;" +
+    		" " +
+    		
+    		" int x = get_global_id(0);" +
+    		" int y = get_global_id(1);" +
+    		" long aux,aux2,aux3; " +
+    		
+    		
+    		" aux = numero1[x] * numero2[y];" + 
+    		" aux2 = aux % 100;" + // mod, remainder
+    		" aux3 = aux / 100;" +  
+    		//" aux2 = aux % 1000000000;" + // mod, remainder
+    		//" aux3 = aux / 1000000000;" +
+    		//" saida[x+(tamanhoNumero1*y)] = aux ; " + 
+    		" saida[x+y] = saida[x+y] + aux2; " +
+    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
+    		
     		"}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
@@ -100,7 +131,7 @@ public class Paralelo
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernel",tamanhoNumero1,tamanhoNumero2);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec",tamanhoNumero1,tamanhoNumero2);
         
         return dstArray;
     }
@@ -169,7 +200,7 @@ public class Paralelo
         }
         else{
         	program = clCreateProgramWithSource(context,
-                    1, new String[]{ programSourceMult }, null, null);
+                    1, new String[]{ programSourceMultDec }, null, null);
         }
        
 		// Build the program

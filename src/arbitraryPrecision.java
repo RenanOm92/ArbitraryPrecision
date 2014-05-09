@@ -96,8 +96,8 @@ public class arbitraryPrecision {
 			
 			aux2 = new String(aux); // Transforma de vetor de char para String
 
-			numero[i] = Long.parseLong(aux2,16);	// E o vetor de string para long
-			//numero[i] = 
+			//numero[i] = Long.parseLong(aux2,16);	// E o vetor de string para long
+			numero[i] = Long.parseLong(aux2);
 			//System.out.println(i+": "+numero[i]); // É eficiente? provavelmente não!
 		}		
 		
