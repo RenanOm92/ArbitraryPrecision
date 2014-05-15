@@ -208,14 +208,23 @@ public class arbitraryPrecision {
 	public static String[] passarCarry(long[] numero, int size){
 		String[] numeroString = new String[numero.length];
 		for (int i = 0; i < numero.length; i++){
+			
 			numeroString[i] = Long.toString(numero[i]);
 			
+			int tamanhoNumero = numeroString[i].length();
+			
 			//System.out.println("number "+numeroString[i]);
-			if ((numeroString[i].length() > size) && (i < numero.length-1)){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
-				
+			if ((tamanhoNumero > size) && (i < numero.length-1)){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
+				int diferencaCarry = tamanhoNumero - size;
 				// estou pegando 1º posição da string, retorna char, transformo para string, de string para int.
-				numero[i+1] = numero[i+1] + (Integer.parseInt(String.valueOf(numeroString[i].charAt(0))));
-				numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
+				//modo antigo
+				//numero[i+1] = numero[i+1] + (Integer.parseInt(String.valueOf(numeroString[i].charAt(0))));
+				//numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
+				
+				//novo modo
+				numero[i+1] = numero[i+1] + Integer.parseInt(numeroString[i].substring(0,diferencaCarry));
+				numeroString[i] = numeroString[i].substring(diferencaCarry);
+				
 				//numero[i+1] = numero[i+1] + 1; // Carry passado errado.
 				//System.out.println(numeroString[i]);
 			}	
@@ -309,11 +318,11 @@ public class arbitraryPrecision {
 		
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
-//		int contador;
-//		for (int i = 0; i < numero2.length; i++){
-//			contador = i * numero1.length;
-//			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
-//		}
+		int contador;
+		for (int i = 0; i < numero2.length; i++){
+			contador = i * numero1.length;
+			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
+		}
 		
 		for (int i = 0; i < resultadoMultParalelo.length; i++){
 			System.out.println(resultadoMultParalelo[i]);
