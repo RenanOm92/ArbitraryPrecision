@@ -319,10 +319,10 @@ public class arbitraryPrecision {
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
 		int contador;
-		for (int i = 0; i < numero2.length; i++){
-			contador = i * numero1.length;
-			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
-		}
+//		for (int i = 0; i < numero2.length; i++){
+//			contador = i * numero1.length;
+//			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
+//		}
 		
 		for (int i = 0; i < resultadoMultParalelo.length; i++){
 			System.out.println(resultadoMultParalelo[i]);

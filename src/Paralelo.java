@@ -10,14 +10,10 @@ import static org.jocl.CL.*;
 
 import org.jocl.*;
 
-/**
- * Using JOCL to sum in parallel
- */
 public class Paralelo
 { 
-    /**
-     * The source code of the OpenCL program to execute
-     */
+	
+	// Soma
     private static String programSourceSoma =
         "__kernel void "+
         "somaParaleloKernel(__global const long *a,"+
@@ -28,6 +24,7 @@ public class Paralelo
         "    c[gid] = a[gid] + b[gid];"+
         "}";
    
+    // Multiplicacao de hexa, usando shift e AND 
     private static String programSourceMultHexadec =
         "__kernel void "+
         "multiplicacaoParaleloKernelHexadec(__global const long *numero1,"+
@@ -53,46 +50,113 @@ public class Paralelo
     		//" saida[x+(tamanhoNumero1*y)] = numero1[x] * numero2[y];" + 
     		"}";
     
-    private static String programSourceMultDec =
-        "__kernel void "+
-        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
-    		"      __global const long *numero2,"+
-    		"	   __const int tamanhoNumero1,"+		
-    		"      __global long* saida)" +
-    		"{" +
-    		
-    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
-    		" 		saida[i] = 0;" +
-    		" " +
-    		
+    // 2 Loops para evitar que sobescreva
+//    private static String programSourceMultDec =
+//        "__kernel void "+
+//        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
+//    		"      __global const long *numero2,"+
+//    		"	   __const int tamanhoNumero1,"+		
+//    		"      __global long* saida)" +
+//    		"{" +
+//    		
+//    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
+//    		" 		saida[i] = 0;" +
+//
+//    		" int x = get_global_size(0);" +
+//    		" int y = get_global_size(1);" +
+//    		" long aux,aux2,aux3; " +
+//    		" for (int  a = 0; a < x ; a++){" +
+//    		" 	for (int b = 0; b < y ; b++){" +
+//    		" 		aux = numero1[a] * numero2[b];" +
+//    		"		aux2 = aux % 100;" +
+//    		"		aux3 = aux / 100;" +
+//    		"		saida[a+b] = saida[a+b] + aux2;" +
+//    		"		saida[a+b+1] = saida[a+b+1] + aux3;" +
+//    		"	}" +
+//    		" } " +
+//    		
+//    		"}";
+    
+    // Totalmente em paralelo, porém as saídas ficam se sobescrevendo no vetor de saída
+//    private static String programSourceMultDec =
+//        "__kernel void "+
+//        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
+//    		"      __global const long *numero2,"+
+//    		"	   __const int tamanhoNumero1,"+		
+//    		"      __global long* saida)" +
+//    		"{" +
+//    		
+//    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
+//    		" 		saida[i] = 0;" +
+//    		" " +
+//    		
 //    		" int x = get_global_id(0);" +
 //    		" int y = get_global_id(1);" +
 //    		" long aux,aux2,aux3; " +
-    		
-    		
+//    		
+//    		
 //    		" aux = numero1[x] * numero2[y];" + 
 //    		" aux2 = aux % 100;" + // mod, remainder
 //    		" aux3 = aux / 100;" +  
-    		//" aux2 = aux % 1000000000;" + // mod, remainder
-    		//" aux3 = aux / 1000000000;" +
-//    		" saida[x+(tamanhoNumero1*y)] = aux ; " + 
+//    		//" aux2 = aux % 1000000000;" + // mod, remainder
+//    		//" aux3 = aux / 1000000000;" +
+////    		" saida[x+(tamanhoNumero1*y)] = aux ; " + 
 //    		" saida[x+y] = saida[x+y] + aux2; " +
 //    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
-    		
-    		" int x = get_global_size(0);" +
-    		" int y = get_global_size(1);" +
-    		" long aux,aux2,aux3; " +
-    		" for (int  a = 0; a < x ; a++){" +
-    		" 	for (int b = 0; b < y ; b++){" +
-    		" 		aux = numero1[a] * numero2[b];" +
-    		"		aux2 = aux % 100;" +
-    		"		aux3 = aux / 100;" +
-    		"		saida[a+b] = saida[a+b] + aux2;" +
-    		"		saida[a+b+1] = saida[a+b+1] + aux3;" +
-    		"	}" +
-    		" } " +
-    		
-    		"}";
+//    		"}";
+  
+    // Tentativa de botar com 1 loop
+    private static String programSourceMultDec =
+    	"__kernel void "+
+    	"multiplicacaoParaleloKernelDec(__global const long *numero1,"+
+		"      __global const long *numero2,"+
+		"	   __const int tamanhoNumero1,"+		
+		"      __global long* saida)" +
+		"{" +
+		
+		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
+		" 		saida[i] = 0;" +
+		" " +
+		
+		" int x = get_global_id(0);" +
+		" int y = get_global_id(1);" +
+		" long aux,aux2,aux3; " +
+		
+		
+		" aux = numero1[x] * numero2[y];" + 
+		" aux2 = aux % 100;" + // mod, remainder
+		" aux3 = aux / 100;" +
+		" for (int i = 0; i < get_global_size(0) + get_global_size(1) ; i++){" +
+		"		saida[i] = saida[i] + aux2;" +
+		"		saida[i+1] = saida[i+1] + aux3; " +  
+		" }" +
+		"}";
+//
+//    // Gera um vetor de saída numero 1 * numero 2
+//    private static String programSourceMultDec =
+//        "__kernel void "+
+//        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
+//    		"      __global const long *numero2,"+
+//    		"	   __const int tamanhoNumero1,"+		
+//    		"      __global long* saida)" +
+//    		"{" +
+//    		
+//    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
+//    		" 		saida[i] = 0;" +
+//    		" " +
+//    		
+//    		" int x = get_global_id(0);" +
+//    		" int y = get_global_id(1);" +
+//    		" long aux,aux2,aux3; " +
+//    		
+//    		
+//    		" aux = numero1[x] * numero2[y];" + 
+//    		" aux2 = aux % 100;" + // mod, remainder
+//    		" aux3 = aux / 100;" +  
+//    		//" aux2 = aux % 1000000000;" + // mod, remainder
+//    		//" aux3 = aux / 1000000000;" +
+//    		" saida[x+(tamanhoNumero1*y)] = aux ; " + 
+//    		"}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
          
