@@ -105,30 +105,31 @@ public class Paralelo
 //    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
 //    		"}";
   
-    // Tentativa de botar com 1 loop
+    // Tentativa de botar com loop dependente reduzido
     private static String programSourceMultDec =
     	"__kernel void "+
     	"multiplicacaoParaleloKernelDec(__global const long *numero1,"+
 		"      __global const long *numero2,"+
-		"	   __const int tamanhoNumero1,"+		
+		"	   __const int tamanhoNumero2,"+		
 		"      __global long* saida)" +
 		"{" +
 		
-		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
+		" for (int i = 0; i < get_global_size(0) + tamanhoNumero2; i++)" +
 		" 		saida[i] = 0;" +
 		" " +
 		
 		" int x = get_global_id(0);" +
-		" int y = get_global_id(1);" +
+		//" int y = get_global_id(1);" +
 		" long aux,aux2,aux3; " +
 		
 		
-		" aux = numero1[x] * numero2[y];" + 
-		" aux2 = aux % 100;" + // mod, remainder
-		" aux3 = aux / 100;" +
-		" for (int i = 0; i < get_global_size(0) + get_global_size(1) ; i++){" +
-		"		saida[i] = saida[i] + aux2;" +
-		"		saida[i+1] = saida[i+1] + aux3; " +  
+
+		" for (int i = 0; i < tamanhoNumero2  ; i++){" +
+		" 	aux = numero1[x] * numero2[i];" + 
+		" 	aux2 = aux % 100;" + // mod, remainder
+		" 	aux3 = aux / 100;" +
+		"	saida[x+i] = saida[x+i] + aux2;" +
+		"	saida[x+i+1] = saida[x+i+1] + aux3; " +  
 		" }" +
 		"}";
 //
@@ -293,16 +294,19 @@ public class Paralelo
         clSetKernelArg(kernel, 1, 
             Sizeof.cl_mem, Pointer.to(memObjects[1]));
         clSetKernelArg(kernel, 2, 
-            Sizeof.cl_mem, Pointer.to(new int[]{tamanhoNumero1}));
+            Sizeof.cl_mem, Pointer.to(new int[]{tamanhoNumero2}));
         clSetKernelArg(kernel, 3, 
             Sizeof.cl_mem, Pointer.to(memObjects[2]));
       
         // Set the work-item dimensions
-        long global_work_size[] = new long[]{tamanhoNumero1,tamanhoNumero2};
-        long local_work_size[] = new long[]{1,1};
+//        long global_work_size[] = new long[]{tamanhoNumero1,tamanhoNumero2};
+//        long local_work_size[] = new long[]{1,1};
+        long global_work_size[] = new long[]{tamanhoNumero1};
+        long local_work_size[] = new long[]{1};
+
         
         // Execute the kernel
-        clEnqueueNDRangeKernel(commandQueue, kernel, 2, null,
+        clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
             global_work_size, local_work_size, 0, null, null);
         
         // Read the output data
