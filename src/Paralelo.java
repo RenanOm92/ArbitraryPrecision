@@ -294,7 +294,7 @@ public class Paralelo
         clSetKernelArg(kernel, 1, 
             Sizeof.cl_mem, Pointer.to(memObjects[1]));
         clSetKernelArg(kernel, 2, 
-            Sizeof.cl_mem, Pointer.to(new int[]{tamanhoNumero2}));
+        	Sizeof.cl_int, Pointer.to(new int[]{tamanhoNumero2}));
         clSetKernelArg(kernel, 3, 
             Sizeof.cl_mem, Pointer.to(memObjects[2]));
       
