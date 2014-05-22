@@ -105,7 +105,7 @@ public class Paralelo
 //    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
 //    		"}";
   
-    // Tentativa de botar com loop dependente reduzido
+    // Tentativa de botar com 1 loop apenas com 1D
     private static String programSourceMultDec =
     	"__kernel void "+
     	"multiplicacaoParaleloKernelDec(__global const long *numero1,"+
@@ -188,7 +188,7 @@ public class Paralelo
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        dst = chamandoOpenCL(srcA,srcB,dst,16,"teste");
+        dst = chamandoOpenCL(srcA,srcB,dst,16,"teste",numero1.length,numero2.length);
         
         return dstArray;
     }

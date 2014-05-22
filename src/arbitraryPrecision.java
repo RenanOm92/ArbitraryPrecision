@@ -51,10 +51,9 @@ public class arbitraryPrecision {
 //		
 //		
 		String resultadoMult;
-		//System.out.println(0x163 * 0x2);
+		
 		long tempoInicio = System.currentTimeMillis();
 		
-		//resultadoMult = multiplicar(st1,st2,size);
 		multiplicar(st1,st2,size);
 		
 		System.out.println("Tempo da multiplicação sequencial : "+(System.currentTimeMillis()-tempoInicio));
@@ -69,10 +68,16 @@ public class arbitraryPrecision {
 			return size;
 		}
 		else {
-			long numeroCasasDecimais = (long)Math.pow(2, arquitetura/2) - 1;
-			int size = (Long.toHexString(numeroCasasDecimais).length());
+			// definir tamanho da coluna em decimal
+			long numeroCasasDecimais = (long)Math.pow(2, arquitetura/2);
+			int size = (Long.toString(numeroCasasDecimais).length() - 1);
 			
 			return size;
+			// definir tamanho da coluna em HEXA
+//			long numeroCasasDecimais = (long)Math.pow(2, arquitetura/2) - 1;
+//			int size = (Long.toHexString(numeroCasasDecimais).length());
+//			
+//			return size;
 		}
 	}
 
@@ -213,40 +218,36 @@ public class arbitraryPrecision {
 			
 			int tamanhoNumero = numeroString[i].length();
 			
-			//System.out.println("number "+numeroString[i]);
-			if ((tamanhoNumero > size) && (i < numero.length-1)){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
+			// Confere se possui Carry
+			if ((tamanhoNumero > size) && (i < numero.length-1)){ 
 				int diferencaCarry = tamanhoNumero - size;
-				// estou pegando 1º posição da string, retorna char, transformo para string, de string para int.
-				//modo antigo
-				//numero[i+1] = numero[i+1] + (Integer.parseInt(String.valueOf(numeroString[i].charAt(0))));
-				//numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
 				
-				//novo modo
+				// seleciono o pedaço que é carry e somo com o número posterior
 				numero[i+1] = numero[i+1] + Integer.parseInt(numeroString[i].substring(0,diferencaCarry));
+				// armazeno o pedaço sem a parte do carry
 				numeroString[i] = numeroString[i].substring(diferencaCarry);
 				
-				//numero[i+1] = numero[i+1] + 1; // Carry passado errado.
-				//System.out.println(numeroString[i]);
-			}	
+			}
+			// Confere se o número precisa de 0
+			else if ((tamanhoNumero < size) && (i < numero.length-1)){
+				numeroString[i] = completarComZero(numeroString[i], size);
+			}
 		}
 		return numeroString;
 	}
 
-//		Devido a transformada de string para long, o que era 100012 pode virar 100 | 12, 
+//		Devido a transformada de string para long, o que era 100|012 pode virar 100 | 12, 
 //		podendo gerar inconsistencia	depois para realizar a concatenação.	
 //		Então é necessário preencher com 0 os números que não tem o tamanho da coluna.
 	
 	public static String completarComZero(String numero, int size){
 		StringBuilder concatenador;	
-		if (numero.length() < size){
-			concatenador = new StringBuilder();
-			for (int j = 0; j < size - numero.length(); j++){
-				concatenador.append("0");					
-			}
-			concatenador.append(numero);
-			numero = concatenador.toString();
+		concatenador = new StringBuilder();
+		for (int j = 0; j < size - numero.length(); j++){
+			concatenador.append("0");					
 		}
-		
+		concatenador.append(numero);
+		numero = concatenador.toString();		
 		return numero;
 	}
 	
@@ -318,42 +319,23 @@ public class arbitraryPrecision {
 		
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
-		int contador;
-//		for (int i = 0; i < numero2.length; i++){
-//			contador = i * numero1.length;
-//			passarCarry(resultadoMultParalelo, size, contador , contador + numero1.length - 1);
+//		for (int i = 0; i < resultadoMultParalelo.length; i++){
+//			System.out.println(resultadoMultParalelo[i]);
 //		}
 		
-		for (int i = 0; i < resultadoMultParalelo.length; i++){
-			System.out.println(resultadoMultParalelo[i]);
-		}
-	}
-	
-	public static String[] passarCarry(long[] numero, int size, int comeco, int fim){
-		String[] numeroString = new String[fim - comeco + 1];
-		for (int i = comeco; i <= fim; i++){
-			numeroString[i] = Long.toString(numero[i]);
-
-			if ((numeroString[i].length() > size) && (i < fim )){ // Se for lento transformar para string, dá pra calcular o (Math.log10 (n) + 1) e ver quantos digitos o numero tem.
-				
-				// estou pegando 1º posição da string, retorna char, transformo para string, de string para int.
-				numero[i+1] = numero[i+1] + (Integer.parseInt(String.valueOf(numeroString[i].charAt(0))));
-				numeroString[i] = numeroString[i].substring(1,size+1); // Remove 1º posição
-			}	
-		}
-		return numeroString;
-	}
-	
-	
-	public static long[] convertLong(List<Long> lista){
 		
-	    long[] numeroPorDigito = new long[lista.size()];
-	    Iterator<Long> iterator = lista.iterator();
-	    for (int i = 0; i < numeroPorDigito.length; i++){
-	    	
-	        numeroPorDigito[i] = iterator.next().intValue();
-	    }
-	    return numeroPorDigito;
+		/*
+		 *  casos de teste
+		 * 
+		 * 551233 * 210 = 1|15|75|89|30 (2D) ou 1|05|75|89|30 (1D)
+		 * 
+		 * 4820983 * 421 = 20|29|63|38|43 (2D) ou 20|01|63|38|43 (1D)
+		 * 
+		 */
+		String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);				
+		String resultadoFinal = concatenar(resultadoCarry);
+		System.out.println(resultadoFinal);
+		
 	}
 	
 }
