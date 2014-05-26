@@ -25,7 +25,7 @@ public class arbitraryPrecision {
 		size = definirTamanhoColunas(arquitetura,"multiplicacao");
 
 		// TESTE
-		size = 2;
+		//size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo pra soma vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -100,21 +100,22 @@ public class arbitraryPrecision {
 			mensagem.getChars(comeco, fim, aux, 0); // Retorna um vetor de char com o intervalo
 			
 			aux2 = new String(aux); // Transforma de vetor de char para String
-
-			//numero[i] = Long.parseLong(aux2,16);	// E o vetor de string para long
-			numero[i] = Long.parseLong(aux2);
+			
+			numero[i] = Long.parseLong(aux2);		// E o vetor de string para long
+			//numero[i] = Long.parseLong(aux2,16);	// Hexa 
 			//System.out.println(i+": "+numero[i]); // É eficiente? provavelmente não!
 		}		
 		
 		aux = new char[restoNum];
-		
+
 		if (restoNum != 0){ // Pega primeira parte do número (mensagem) 
 				 mensagem.getChars(0, restoNum, aux, 0);
 				 aux2 = new String(aux);
-				 numero[numero.length-1] = Long.parseLong(aux2,16);
+				 numero[numero.length-1] = Long.parseLong(aux2);
+				 //numero[numero.length-1] = Long.parseLong(aux2,16); // Hexa
 				 //System.out.println(numero[numero.length-1]);
 		}
-		
+
 		return numero;
 	}
 	
@@ -212,14 +213,14 @@ public class arbitraryPrecision {
 	
 	public static String[] passarCarry(long[] numero, int size){
 		String[] numeroString = new String[numero.length];
-		for (int i = 0; i < numero.length; i++){
+		for (int i = 0; i < numero.length-1; i++){
 			
 			numeroString[i] = Long.toString(numero[i]);
 			
 			int tamanhoNumero = numeroString[i].length();
-			
+
 			// Confere se possui Carry
-			if ((tamanhoNumero > size) && (i < numero.length-1)){ 
+			if (tamanhoNumero > size){ 
 				int diferencaCarry = tamanhoNumero - size;
 				
 				// seleciono o pedaço que é carry e somo com o número posterior
@@ -227,11 +228,19 @@ public class arbitraryPrecision {
 				// armazeno o pedaço sem a parte do carry
 				numeroString[i] = numeroString[i].substring(diferencaCarry);
 				
-			}
-			// Confere se o número precisa de 0
-			else if ((tamanhoNumero < size) && (i < numero.length-1)){
+			}			
+			
+			// Confere se o número precisa de 0 ( 2 casos: quando o tamanho do número é inferior ao intervalo e ele não tá no fim-1 ou quando ele é inferior ao intervalo, ele tá no fim-1 e o fim não é 0
+			else if ( (tamanhoNumero < size) && ( ( i < numero.length-2) || (( i == numero.length-2) && (numero[numero.length-1] != 0)))){
 				numeroString[i] = completarComZero(numeroString[i], size);
 			}
+		}
+		
+		if (numero[numero.length-1] != 0){
+			numeroString[numero.length-1] = Long.toString(numero[numero.length-1]);
+		}
+		else{
+			numeroString[numero.length-1] = "";
 		}
 		return numeroString;
 	}
@@ -260,7 +269,7 @@ public class arbitraryPrecision {
 	}	
 	
 	public static void multiplicar (String st1, String st2, int size){
-		
+
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
 		
@@ -316,7 +325,7 @@ public class arbitraryPrecision {
 	}
 	
 	public static void multiplicarParalelo(long[] numero1, long[] numero2, int size){
-		
+
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
 //		for (int i = 0; i < resultadoMultParalelo.length; i++){

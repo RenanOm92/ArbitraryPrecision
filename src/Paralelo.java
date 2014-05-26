@@ -126,8 +126,10 @@ public class Paralelo
 
 		" for (int i = 0; i < tamanhoNumero2  ; i++){" +
 		" 	aux = numero1[x] * numero2[i];" + 
-		" 	aux2 = aux % 100;" + // mod, remainder
-		" 	aux3 = aux / 100;" +
+		//" 	aux2 = aux % 100;" + // mod, remainder
+		//" 	aux3 = aux / 100;" +
+		" 	aux2 = aux % 1000000000;" + // mod, remainder
+		" 	aux3 = aux / 1000000000;" +
 		"	saida[x+i] = saida[x+i] + aux2;" +
 		"	saida[x+i+1] = saida[x+i+1] + aux3; " +  
 		" }" +
@@ -198,7 +200,7 @@ public class Paralelo
         int numeroDeWork;
         numeroDeWork = numero1.length + numero2.length;
 //        numeroDeWork = numero1.length * numero2.length;
-        
+
         int tamanhoNumero1 = numero1.length;
         int tamanhoNumero2 = numero2.length;
         
