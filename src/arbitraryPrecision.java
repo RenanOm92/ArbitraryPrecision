@@ -25,7 +25,7 @@ public class arbitraryPrecision {
 		size = definirTamanhoColunas(arquitetura,"multiplicacao");
 
 		// TESTE
-		//size = 2;
+//		size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo pra soma vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -301,7 +301,11 @@ public class arbitraryPrecision {
 	}
 	
 	public static void multiplicarParalelo(long[] numero1, long[] numero2, int size){
-
+		System.out.println(numero1[0]);
+		System.out.println(numero1[1]);
+		System.out.println(numero1[2]);
+		System.out.println(numero1[3]);
+		System.out.println("a");
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
 //		for (int i = 0; i < resultadoMultParalelo.length; i++){
@@ -312,12 +316,22 @@ public class arbitraryPrecision {
 		/*
 		 *  casos de teste
 		 * 
-		 * 551233 * 210 = 1|15|75|89|30 (2D) ou 1|05|75|89|30 (1D)
+		 * 42187782417843887943789487242187421877824178438879437894872421874218778241784388794378948724218742187782417843887943789487242187
+		 *  X
+		 * 42187782417843887943789487242187421877824178438879437894872421874218778241784388794378948724218742187782417843887943789487242187
+		 * 
 		 * 
 		 * 4820983 * 421 = 20|29|63|38|43 (2D) ou 20|01|63|38|43 (1D)
 		 * 
 		 */
-		String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);				
+		for (int i = 0; i < resultadoMultParalelo.length ; i++){
+			System.out.println(resultadoMultParalelo[i]);
+		}
+		String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);	
+		System.out.println("a");
+		for (int i = 0; i < resultadoCarry.length ; i++){
+			System.out.println(resultadoCarry[i]);
+		}
 		String resultadoFinal = concatenar(resultadoCarry);
 		System.out.println("Resultado multiplicação: "+resultadoFinal);
 		
