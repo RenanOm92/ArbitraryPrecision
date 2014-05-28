@@ -39,24 +39,22 @@ public class arbitraryPrecision {
 		
 //		Arquitetura máxima suportada é 64x.	
 		
-//		String resultadoSoma;
-//		
-//		long tempoInicio = System.currentTimeMillis();
-//		
-//		resultadoSoma = somar(st1,st2,size);
-//		
-//		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio));
-//		System.out.println("Resultado da soma : "+resultadoSoma);	
-//		
-//		
-//		
-		String resultadoMult;
+		String resultadoSoma;
 		
 		long tempoInicio = System.currentTimeMillis();
 		
+		resultadoSoma = somar(st1,st2,size);
+		
+		System.out.println("Resultado soma: "+resultadoSoma);
+		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio)+" ms");	
+		
+		String resultadoMult;
+		
+		tempoInicio = System.currentTimeMillis();
+		
 		multiplicar(st1,st2,size);
 		
-		System.out.println("Tempo da multiplicação sequencial : "+(System.currentTimeMillis()-tempoInicio));
+		System.out.println("Tempo da multiplicação: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 		//System.out.println("Resultado multiplicação sequenc. : "+resultadoMult);
 
 	}
@@ -127,10 +125,9 @@ public class arbitraryPrecision {
 //		SOMA SEQUENCIAL
 		
 //		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);	
+
 //		String[] numero = passarCarry(numeroParcial,size);		
-//		for (int i = 0; i < numero.length-1; i++){
-//			numero[i] = completarComZero(numero[i], size);
-//		}
+
 //		String soma = concatenar(numero);	
 //		return soma;
 
@@ -138,46 +135,25 @@ public class arbitraryPrecision {
 //		SOMA PARALELO
 		
 		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
-	//	System.out.println(numeroParcial2[1]);
+
 		String[] numerox = passarCarry(numeroParcial2,size);		
-		for (int i = 0; i < numerox.length-1; i++){
-			numerox[i] = completarComZero(numerox[i], size);
-		}
+
 		String soma2 = concatenar(numerox);
 		return soma2;
 
-		
-//		SOMA DO PROPIO JAVA -- fazer
-//		tempoInicio = System.currentTimeMillis();
-//		BigInteger a = new BigInteger()
 		
 	}
 		
 	public static long[] fazerSomaEmColunasParalelo(long[] numero1,long[] numero2){
 
-		long[] numeroFinal;
 		long[] numeroParcial;
-		int maior;
-		if (numero1.length < numero2.length){
-			maior = 2;
-			numeroFinal = new long[numero2.length];
-		}else{
-			maior = 1;
-			numeroFinal = new long[numero1.length];
-		}
-		numeroParcial = Paralelo.somaParalelo(numero1,numero2,maior);
-		for (int i = 0; i < numeroParcial.length; i++){
-			System.out.println(numeroParcial[i]);
-			System.out.println(numeroFinal[i]);
-			numeroFinal[i] = numeroParcial[i];
-		}
 
-		return numeroFinal;
+		numeroParcial = Paralelo.somaParalelo(numero1,numero2);
+
+		return numeroParcial;
 	}
 	
 	public static long[] fazerSomaEmColunasSequencial(long[] numero1, long[] numero2){
-		//System.out.println(numero1.length);
-		//System.out.println(numero2.length);
 		
 		long[] numeroFinal;
 		if (numero1.length < numero2.length){
@@ -343,7 +319,7 @@ public class arbitraryPrecision {
 		 */
 		String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);				
 		String resultadoFinal = concatenar(resultadoCarry);
-		System.out.println(resultadoFinal);
+		System.out.println("Resultado multiplicação: "+resultadoFinal);
 		
 	}
 	

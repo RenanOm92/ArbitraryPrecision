@@ -100,7 +100,6 @@ public class Paralelo
 //    		" aux3 = aux / 100;" +  
 //    		//" aux2 = aux % 1000000000;" + // mod, remainder
 //    		//" aux3 = aux / 1000000000;" +
-////    		" saida[x+(tamanhoNumero1*y)] = aux ; " + 
 //    		" saida[x+y] = saida[x+y] + aux2; " +
 //    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
 //    		"}";
@@ -126,8 +125,8 @@ public class Paralelo
 
 		" for (int i = 0; i < tamanhoNumero2  ; i++){" +
 		" 	aux = numero1[x] * numero2[i];" + 
-		//" 	aux2 = aux % 100;" + // mod, remainder
-		//" 	aux3 = aux / 100;" +
+//		" 	aux2 = aux % 100;" + // mod, remainder
+//		" 	aux3 = aux / 100;" +
 		" 	aux2 = aux % 1000000000;" + // mod, remainder
 		" 	aux3 = aux / 1000000000;" +
 		"	saida[x+i] = saida[x+i] + aux2;" +
@@ -161,14 +160,13 @@ public class Paralelo
 //    		" saida[x+(tamanhoNumero1*y)] = aux ; " + 
 //    		"}";
     
-    public static long[] somaParalelo(long[]numero1, long[] numero2,int maior){
+    public static long[] somaParalelo(long[]numero1, long[] numero2){
          
         int numeroDeWork;
         long[] srcArrayA;
         long[] srcArrayB;
         
-        
-        if (maior == 1){
+        if (numero1.length >= numero2.length){
         	numeroDeWork = numero1.length;
         	srcArrayA = numero1;
         	srcArrayB = new long[numeroDeWork];
@@ -190,7 +188,7 @@ public class Paralelo
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        dst = chamandoOpenCL(srcA,srcB,dst,16,"teste",numero1.length,numero2.length);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"somaParaleloKernel",numero1.length,numero2.length);
         
         return dstArray;
     }
@@ -295,10 +293,16 @@ public class Paralelo
             Sizeof.cl_mem, Pointer.to(memObjects[0]));
         clSetKernelArg(kernel, 1, 
             Sizeof.cl_mem, Pointer.to(memObjects[1]));
-        clSetKernelArg(kernel, 2, 
-        	Sizeof.cl_int, Pointer.to(new int[]{tamanhoNumero2}));
-        clSetKernelArg(kernel, 3, 
-            Sizeof.cl_mem, Pointer.to(memObjects[2]));
+        if (operacao == "somaParaleloKernel"){
+        	clSetKernelArg(kernel, 2, 
+                    Sizeof.cl_mem, Pointer.to(memObjects[2]));
+        }
+        else{
+        	clSetKernelArg(kernel, 2, 
+                	Sizeof.cl_int, Pointer.to(new int[]{tamanhoNumero2}));
+            clSetKernelArg(kernel, 3, 
+                    Sizeof.cl_mem, Pointer.to(memObjects[2]));
+        }
       
         // Set the work-item dimensions
 //        long global_work_size[] = new long[]{tamanhoNumero1,tamanhoNumero2};
