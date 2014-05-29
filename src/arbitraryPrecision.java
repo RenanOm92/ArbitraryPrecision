@@ -25,7 +25,7 @@ public class arbitraryPrecision {
 		size = definirTamanhoColunas(arquitetura,"multiplicacao");
 
 		// TESTE
-		size = 2;
+//		size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo pra soma vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -39,24 +39,22 @@ public class arbitraryPrecision {
 		
 //		Arquitetura máxima suportada é 64x.	
 		
-//		String resultadoSoma;
-//		
-//		long tempoInicio = System.currentTimeMillis();
-//		
-//		resultadoSoma = somar(st1,st2,size);
-//		
-//		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio));
-//		System.out.println("Resultado da soma : "+resultadoSoma);	
-//		
-//		
-//		
-		String resultadoMult;
+		String resultadoSoma;
 		
 		long tempoInicio = System.currentTimeMillis();
 		
+		resultadoSoma = somar(st1,st2,size);
+		
+		System.out.println("Resultado soma: "+resultadoSoma);
+		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio)+" ms");	
+		
+		String resultadoMult;
+		
+		tempoInicio = System.currentTimeMillis();
+		
 		multiplicar(st1,st2,size);
 		
-		System.out.println("Tempo da multiplicação sequencial : "+(System.currentTimeMillis()-tempoInicio));
+		System.out.println("Tempo da multiplicação: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 		//System.out.println("Resultado multiplicação sequenc. : "+resultadoMult);
 
 	}
@@ -100,21 +98,22 @@ public class arbitraryPrecision {
 			mensagem.getChars(comeco, fim, aux, 0); // Retorna um vetor de char com o intervalo
 			
 			aux2 = new String(aux); // Transforma de vetor de char para String
-
-			//numero[i] = Long.parseLong(aux2,16);	// E o vetor de string para long
-			numero[i] = Long.parseLong(aux2);
+			
+			numero[i] = Long.parseLong(aux2);		// E o vetor de string para long
+			//numero[i] = Long.parseLong(aux2,16);	// Hexa 
 			//System.out.println(i+": "+numero[i]); // É eficiente? provavelmente não!
 		}		
 		
 		aux = new char[restoNum];
-		
+
 		if (restoNum != 0){ // Pega primeira parte do número (mensagem) 
 				 mensagem.getChars(0, restoNum, aux, 0);
 				 aux2 = new String(aux);
-				 numero[numero.length-1] = Long.parseLong(aux2,16);
+				 numero[numero.length-1] = Long.parseLong(aux2);
+				 //numero[numero.length-1] = Long.parseLong(aux2,16); // Hexa
 				 //System.out.println(numero[numero.length-1]);
 		}
-		
+
 		return numero;
 	}
 	
@@ -126,10 +125,9 @@ public class arbitraryPrecision {
 //		SOMA SEQUENCIAL
 		
 //		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);	
+
 //		String[] numero = passarCarry(numeroParcial,size);		
-//		for (int i = 0; i < numero.length-1; i++){
-//			numero[i] = completarComZero(numero[i], size);
-//		}
+
 //		String soma = concatenar(numero);	
 //		return soma;
 
@@ -137,46 +135,25 @@ public class arbitraryPrecision {
 //		SOMA PARALELO
 		
 		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
-	//	System.out.println(numeroParcial2[1]);
+
 		String[] numerox = passarCarry(numeroParcial2,size);		
-		for (int i = 0; i < numerox.length-1; i++){
-			numerox[i] = completarComZero(numerox[i], size);
-		}
+
 		String soma2 = concatenar(numerox);
 		return soma2;
 
-		
-//		SOMA DO PROPIO JAVA -- fazer
-//		tempoInicio = System.currentTimeMillis();
-//		BigInteger a = new BigInteger()
 		
 	}
 		
 	public static long[] fazerSomaEmColunasParalelo(long[] numero1,long[] numero2){
 
-		long[] numeroFinal;
 		long[] numeroParcial;
-		int maior;
-		if (numero1.length < numero2.length){
-			maior = 2;
-			numeroFinal = new long[numero2.length];
-		}else{
-			maior = 1;
-			numeroFinal = new long[numero1.length];
-		}
-		numeroParcial = Paralelo.somaParalelo(numero1,numero2,maior);
-		for (int i = 0; i < numeroParcial.length; i++){
-			System.out.println(numeroParcial[i]);
-			System.out.println(numeroFinal[i]);
-			numeroFinal[i] = numeroParcial[i];
-		}
 
-		return numeroFinal;
+		numeroParcial = Paralelo.somaParalelo(numero1,numero2);
+
+		return numeroParcial;
 	}
 	
 	public static long[] fazerSomaEmColunasSequencial(long[] numero1, long[] numero2){
-		//System.out.println(numero1.length);
-		//System.out.println(numero2.length);
 		
 		long[] numeroFinal;
 		if (numero1.length < numero2.length){
@@ -212,14 +189,14 @@ public class arbitraryPrecision {
 	
 	public static String[] passarCarry(long[] numero, int size){
 		String[] numeroString = new String[numero.length];
-		for (int i = 0; i < numero.length; i++){
+		for (int i = 0; i < numero.length-1; i++){
 			
 			numeroString[i] = Long.toString(numero[i]);
 			
 			int tamanhoNumero = numeroString[i].length();
-			
+
 			// Confere se possui Carry
-			if ((tamanhoNumero > size) && (i < numero.length-1)){ 
+			if (tamanhoNumero > size){ 
 				int diferencaCarry = tamanhoNumero - size;
 				
 				// seleciono o pedaço que é carry e somo com o número posterior
@@ -227,11 +204,19 @@ public class arbitraryPrecision {
 				// armazeno o pedaço sem a parte do carry
 				numeroString[i] = numeroString[i].substring(diferencaCarry);
 				
-			}
-			// Confere se o número precisa de 0
-			else if ((tamanhoNumero < size) && (i < numero.length-1)){
+			}			
+			
+			// Confere se o número precisa de 0 ( 2 casos: quando o tamanho do número é inferior ao intervalo e ele não tá no fim-1 ou quando ele é inferior ao intervalo, ele tá no fim-1 e o fim não é 0
+			else if ( (tamanhoNumero < size) && ( ( i < numero.length-2) || (( i == numero.length-2) && (numero[numero.length-1] != 0)))){
 				numeroString[i] = completarComZero(numeroString[i], size);
 			}
+		}
+		
+		if (numero[numero.length-1] != 0){
+			numeroString[numero.length-1] = Long.toString(numero[numero.length-1]);
+		}
+		else{
+			numeroString[numero.length-1] = "";
 		}
 		return numeroString;
 	}
@@ -260,7 +245,7 @@ public class arbitraryPrecision {
 	}	
 	
 	public static void multiplicar (String st1, String st2, int size){
-		
+
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
 		
@@ -316,7 +301,11 @@ public class arbitraryPrecision {
 	}
 	
 	public static void multiplicarParalelo(long[] numero1, long[] numero2, int size){
-		
+		System.out.println(numero1[0]);
+		System.out.println(numero1[1]);
+		System.out.println(numero1[2]);
+		System.out.println(numero1[3]);
+		System.out.println("a");
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
 //		for (int i = 0; i < resultadoMultParalelo.length; i++){
@@ -327,14 +316,26 @@ public class arbitraryPrecision {
 		/*
 		 *  casos de teste
 		 * 
-		 * 551233 * 210 = 1|15|75|89|30 (2D) ou 1|05|75|89|30 (1D)
+		 * 42187782417843887943789487242187421877824178438879437894872421874218778241784388794378948724218742187782417843887943789487242187
+		 *  X
+		 * 42187782417843887943789487242187421877824178438879437894872421874218778241784388794378948724218742187782417843887943789487242187
 		 * 
-		 * 4820983 * 421 = 20|29|63|38|43 (2D) ou 20|01|63|38|43 (1D)
+		 * 218742187782417843887943789487242187
+		 * X
+		 * 218742187782417843887943789487242187
+		 * 
 		 * 
 		 */
-		String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);				
+		for (int i = 0; i < resultadoMultParalelo.length ; i++){
+			System.out.println(resultadoMultParalelo[i]);
+		}
+		String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);	
+		System.out.println("a");
+		for (int i = 0; i < resultadoCarry.length ; i++){
+			System.out.println(resultadoCarry[i]);
+		}
 		String resultadoFinal = concatenar(resultadoCarry);
-		System.out.println(resultadoFinal);
+		System.out.println("Resultado multiplicação: "+resultadoFinal);
 		
 	}
 	
