@@ -312,7 +312,7 @@ public class Paralelo
 
         
         // Execute the kernel
-        clEnqueueNDRangeKernel(commandQueue, kernel, 1, null,
+        clEnqueueNDRangeKernel(commandQueue, kernel,1, null,
             global_work_size, local_work_size, 0, null, null);
         
         // Read the output data
