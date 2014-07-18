@@ -244,6 +244,14 @@ public class arbitraryPrecision {
 		return saida.toString();
 	}	
 	
+	public static String concatenar2(long[] numero){
+		StringBuilder saida = new StringBuilder();
+		for (int i = numero.length -1; i >= 0 ; i--){
+			saida.append(numero[i]);
+		}
+		return saida.toString();
+	}	
+	
 	public static void multiplicar (String st1, String st2, int size){
 
 		final long[] numero1 = separarNumeros(st1, size);
@@ -301,41 +309,29 @@ public class arbitraryPrecision {
 	}
 	
 	public static void multiplicarParalelo(long[] numero1, long[] numero2, int size){
-		System.out.println(numero1[0]);
-		System.out.println(numero1[1]);
-		System.out.println(numero1[2]);
-		System.out.println(numero1[3]);
-		System.out.println("a");
 		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
 		
-//		for (int i = 0; i < resultadoMultParalelo.length; i++){
-//			System.out.println(resultadoMultParalelo[i]);
-//		}
+		for (int i = 0; i < resultadoMultParalelo.length; i++){
+			System.out.println(i+" "+resultadoMultParalelo[i]);
+		}
 		
 		
 		/*
 		 *  casos de teste
 		 * 
+		 * 1 * 2787867257551765775672572642721434254327285237823782723737872742387287583678348799326420428943642342873628457284925742542783452745298734726342984723462875627826757230462738402364723627843620576235072653742304623780562357265273560208375252058637256328756237536285726305627
+		 * 
 		 * 42187782417843887943789487242187421877824178438879437894872421874218778241784388794378948724218742187782417843887943789487242187
-		 *  X
 		 * 42187782417843887943789487242187421877824178438879437894872421874218778241784388794378948724218742187782417843887943789487242187
-		 * 
-		 * 218742187782417843887943789487242187
-		 * X
-		 * 218742187782417843887943789487242187
-		 * 
-		 * 
 		 */
-		for (int i = 0; i < resultadoMultParalelo.length ; i++){
-			System.out.println(resultadoMultParalelo[i]);
-		}
+
 		String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);	
-		System.out.println("a");
-		for (int i = 0; i < resultadoCarry.length ; i++){
-			System.out.println(resultadoCarry[i]);
-		}
 		String resultadoFinal = concatenar(resultadoCarry);
-		System.out.println("Resultado multiplicação: "+resultadoFinal);
+		
+		//String resultadoFinal = concatenar2(resultadoMultParalelo);
+		
+		//System.out.println("Resultado multiplicação: "+resultadoFinal);
+		System.out.println(resultadoFinal);
 		
 	}
 	

@@ -14,100 +14,65 @@ public class Paralelo
 { 
 	
 	// Soma
-    private static String programSourceSoma =
+    private static String codigoOpenCLSoma =
         "__kernel void "+
-        "somaParaleloKernel(__global const long *a,"+
-        "             __global const long *b,"+
-        "             __global long *c)"+
+        "somaParaleloKernel(__global const long *numero1,"+
+        "             __global const long *numero2,"+
+        "             __global long *saida)"+
         "{"+
         "    int gid = get_global_id(0);"+
-        "    c[gid] = a[gid] + b[gid];"+
+        "    saida[gid] = numero1[gid] + numero2[gid];"+
         "}";
    
     // Multiplicacao de hexa, usando shift e AND 
-    private static String programSourceMultHexadec =
+    private static String codigoOpenCLMultiplicacaoHexadec =
         "__kernel void "+
         "multiplicacaoParaleloKernelHexadec(__global const long *numero1,"+
-    		"      __global const long *numero2,"+
-    		"	   __const int tamanhoNumero1,"+		
+    		"      __global const long *numero2,"+		
     		"      __global long* saida)" +
     		"{" +
     		" int x = get_global_id(0);" +
     		" int y = get_global_id(1);" +
-    		//" long *saida2 = {0};" +
+    		
     		" long aux,aux2,aux3; " +
     		
     		" aux = numero1[x] * numero2[y];" + 
     		" aux2 = aux & 0xFF;" +
     		" aux3 = aux >> 8;" +
     		
-    		" saida[x+y] = aux2; " +
+    		" saida[x+y] = saida[x+y] + aux2; " +
     		" saida[x+y+1] = saida[x+y+1] + aux3; " +
     		
-    		//" aux = numero1[x] * numero2[y];" +
-    		//" saida[x+(tamanhoNumero1*y)] = aux; " +
-    		//" printf(\"%lu\",aux);" +
-    		//" saida[x+(tamanhoNumero1*y)] = numero1[x] * numero2[y];" + 
     		"}";
     
-    // 2 Loops para evitar que sobescreva
-//    private static String programSourceMultDec =
-//        "__kernel void "+
-//        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
-//    		"      __global const long *numero2,"+
-//    		"	   __const int tamanhoNumero1,"+		
-//    		"      __global long* saida)" +
-//    		"{" +
-//    		
-//    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
-//    		" 		saida[i] = 0;" +
-//
-//    		" int x = get_global_size(0);" +
-//    		" int y = get_global_size(1);" +
-//    		" long aux,aux2,aux3; " +
-//    		" for (int  a = 0; a < x ; a++){" +
-//    		" 	for (int b = 0; b < y ; b++){" +
-//    		" 		aux = numero1[a] * numero2[b];" +
-//    		"		aux2 = aux % 100;" +
-//    		"		aux3 = aux / 100;" +
-//    		"		saida[a+b] = saida[a+b] + aux2;" +
-//    		"		saida[a+b+1] = saida[a+b+1] + aux3;" +
-//    		"	}" +
-//    		" } " +
-//    		
-//    		"}";
-    
     // Totalmente em paralelo, porém as saídas ficam se sobescrevendo no vetor de saída
-//    private static String programSourceMultDec =
-//        "__kernel void "+
-//        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
-//    		"      __global const long *numero2,"+
-//    		"	   __const int tamanhoNumero1,"+		
-//    		"      __global long* saida)" +
-//    		"{" +
-//    		
-//    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
-//    		" 		saida[i] = 0;" +
-//    		" " +
-//    		
-//    		" int x = get_global_id(0);" +
-//    		" int y = get_global_id(1);" +
-//    		" long aux,aux2,aux3; " +
-//    		
-//    		
-//    		" aux = numero1[x] * numero2[y];" + 
-//    		" aux2 = aux % 100;" + // mod, remainder
-//    		" aux3 = aux / 100;" +  
-//    		//" aux2 = aux % 1000000000;" + // mod, remainder
-//    		//" aux3 = aux / 1000000000;" +
-//    		" saida[x+y] = saida[x+y] + aux2; " +
-//    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
-//    		"}";
+    private static String codigoOpenCLMultiplicacaoDecimal2D =
+        "__kernel void "+
+        "multiplicacaoParaleloKernelDec2D(__global const long *numero1,"+
+    		"      __global const long *numero2,"+		
+    		"      __global long* saida)" +
+    		"{" +
+    		
+    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
+    		" 		saida[i] = 0;" +
+    		" " +
+    		
+    		" int x = get_global_id(0);" +
+    		" int y = get_global_id(1);" +
+    		" long aux,aux2,aux3; " +
+    		
+    		
+    		" aux = numero1[x] * numero2[y];" + 
+    		" aux2 = aux % 1000000000;" + // mod, remainder
+    		" aux3 = aux / 1000000000;" +
+    		" saida[x+y] = saida[x+y] + aux2; " +
+    		" saida[x+y+1] = saida[x+y+1] + aux3; " +
+    		"}";
   
     // Tentativa de botar com 1 loop apenas com 1D
-    private static String programSourceMultDec =
+    private static String codigoOpenCLMultiplicacaoDecimal1D =
     	"__kernel void "+
-    	"multiplicacaoParaleloKernelDec(__global const long *numero1,"+
+    	"multiplicacaoParaleloKernelDec1D(__global const long *numero1,"+
 		"      __global const long *numero2,"+
 		"	   __const int tamanhoNumero2,"+		
 		"      __global long* saida)" +
@@ -125,14 +90,47 @@ public class Paralelo
 
 		" for (int i = 0; i < tamanhoNumero2  ; i++){" +
 		" 	aux = numero1[x] * numero2[i];" + 
-//		" 	aux2 = aux % 100;" + // mod, remainder
-//		" 	aux3 = aux / 100;" +
 		" 	aux2 = aux % 1000000000;" + // mod, remainder
 		" 	aux3 = aux / 1000000000;" +
-		"	saida[x+i] = saida[x+i] + aux2;" +
+		"	saida[x+i] =  saida[x+i] + aux2;" +
 		"	saida[x+i+1] = saida[x+i+1] + aux3; " +  
 		" }" +
 		"}";
+    
+    // usando 2 loops, pq global id gera concorrencia e erro!!! FUNCIONANDO com global size 1!
+    private static String codigoOpenCLMultiplicacaoDecimal0D =
+        	"__kernel void "+
+        	"multiplicacaoParaleloKernelDec0D(__global const long *numero1,"+
+    		"      __global const long *numero2,"+
+    		"	   __const int tamanhoNumero1,"+
+    		"	   __const int tamanhoNumero2,"+		
+    		"      __global long* saida)" +
+    		"{" +
+    		
+    		" for (int i = 0; i < tamanhoNumero1 + tamanhoNumero2; i++)" +
+    		" 		saida[i] = 0;" +
+    		
+    		" long aux,aux2,aux3; " +
+    		
+    		
+    		" for (int a = 0; a < tamanhoNumero1 ; a++){"+
+    		" 	for (int b = 0; b < tamanhoNumero2  ; b++){" +
+    		" 		aux = numero1[a] * numero2[b];" + 
+    		" 		aux2 = (aux % 1000000000);" + // mod, remainder
+    		" 		aux3 = aux / 1000000000;" +
+    		"		saida[a+b] = saida[a+b] + aux2 ; " +
+    		"		saida[a+b+1] = saida[a+b+1] + aux3; " + 
+    		"		if (saida[a+b] >= 1000000000){" +
+    		"			aux2 = saida[a+b] % 1000000000;"	+
+    		" 			aux3 = saida[a+b] / 1000000000;" +
+    		"			saida[a+b] = aux2;" +
+    		"			saida[a+b+1] = saida[a+b+1] +aux3;" +
+    		"		}"	+
+    					
+    		" 	}"+
+    		" }" +
+    		"}";
+    
 //
 //    // Gera um vetor de saída numero 1 * numero 2
 //    private static String programSourceMultDec =
@@ -197,7 +195,6 @@ public class Paralelo
         
         int numeroDeWork;
         numeroDeWork = numero1.length + numero2.length;
-//        numeroDeWork = numero1.length * numero2.length;
 
         int tamanhoNumero1 = numero1.length;
         int tamanhoNumero2 = numero2.length;
@@ -210,7 +207,10 @@ public class Paralelo
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec",tamanhoNumero1,tamanhoNumero2);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelHexadec",tamanhoNumero1,tamanhoNumero2);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec2D",tamanhoNumero1,tamanhoNumero2);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec1D",tamanhoNumero1,tamanhoNumero2);
+        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec0D",tamanhoNumero1,tamanhoNumero2);
         
         return dstArray;
     }
@@ -271,15 +271,24 @@ public class Paralelo
             CL_MEM_READ_WRITE, 
             Sizeof.cl_long * numeroDeWork, null, null);
         
-        cl_program program;
+        cl_program program = null;
         
         if (operacao == "somaParaleloKernel"){
         	program = clCreateProgramWithSource(context,
-                    1, new String[]{ programSourceSoma }, null, null);
+                    1, new String[]{ codigoOpenCLSoma }, null, null);
         }
-        else{
+        else if (operacao == "multiplicacaoParaleloKernelHexadec"){
         	program = clCreateProgramWithSource(context,
-                    1, new String[]{ programSourceMultDec }, null, null);
+                    1, new String[]{ codigoOpenCLMultiplicacaoHexadec }, null, null);
+        }else if (operacao == "multiplicacaoParaleloKernelDec2D"){
+        	program = clCreateProgramWithSource(context,
+                    1, new String[]{ codigoOpenCLMultiplicacaoDecimal2D }, null, null);
+        }else if (operacao == "multiplicacaoParaleloKernelDec1D"){
+        	program = clCreateProgramWithSource(context,
+                    1, new String[]{ codigoOpenCLMultiplicacaoDecimal1D }, null, null);
+        }else if (operacao == "multiplicacaoParaleloKernelDec0D"){
+        	program = clCreateProgramWithSource(context,
+                    1, new String[]{ codigoOpenCLMultiplicacaoDecimal0D }, null, null);
         }
        
 		// Build the program
@@ -293,14 +302,21 @@ public class Paralelo
             Sizeof.cl_mem, Pointer.to(memObjects[0]));
         clSetKernelArg(kernel, 1, 
             Sizeof.cl_mem, Pointer.to(memObjects[1]));
-        if (operacao == "somaParaleloKernel"){
+        if (operacao == "somaParaleloKernel" || operacao == "multiplicacaoParaleloKernelDec2D" || operacao == "multiplicacaoParaleloKernelHexadec" ){
         	clSetKernelArg(kernel, 2, 
                     Sizeof.cl_mem, Pointer.to(memObjects[2]));
         }
-        else{
+        else if (operacao == "multiplicacaoParaleloKernelDec1D"){
         	clSetKernelArg(kernel, 2, 
                 	Sizeof.cl_int, Pointer.to(new int[]{tamanhoNumero2}));
             clSetKernelArg(kernel, 3, 
+                    Sizeof.cl_mem, Pointer.to(memObjects[2]));
+        }else if (operacao == "multiplicacaoParaleloKernelDec0D"){
+        	clSetKernelArg(kernel, 2, 
+                	Sizeof.cl_int, Pointer.to(new int[]{tamanhoNumero1}));
+        	clSetKernelArg(kernel, 3, 
+                	Sizeof.cl_int, Pointer.to(new int[]{tamanhoNumero2}));
+            clSetKernelArg(kernel, 4, 
                     Sizeof.cl_mem, Pointer.to(memObjects[2]));
         }
       
