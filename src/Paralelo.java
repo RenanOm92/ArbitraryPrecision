@@ -69,7 +69,7 @@ public class Paralelo
     		" saida[x+y+1] = saida[x+y+1] + aux3; " +
     		"}";
   
-    // Tentativa de botar com 1 loop apenas com 1D
+    // Tentativa de botar com 1 loop apenas com 1D, não funciona!
     private static String codigoOpenCLMultiplicacaoDecimal1D =
     	"__kernel void "+
     	"multiplicacaoParaleloKernelDec1D(__global const long *numero1,"+
@@ -83,7 +83,7 @@ public class Paralelo
 		" " +
 		
 		" int x = get_global_id(0);" +
-		//" int y = get_global_id(1);" +
+
 		" long aux,aux2,aux3; " +
 		
 		
@@ -93,7 +93,13 @@ public class Paralelo
 		" 	aux2 = aux % 1000000000;" + // mod, remainder
 		" 	aux3 = aux / 1000000000;" +
 		"	saida[x+i] =  saida[x+i] + aux2;" +
-		"	saida[x+i+1] = saida[x+i+1] + aux3; " +  
+		"	saida[x+i+1] = saida[x+i+1] + aux3; " + 
+		"		if (saida[x+i] >= 1000000000){" +
+		"			aux2 = saida[x+i] % 1000000000;"	+
+		" 			aux3 = saida[x+i] / 1000000000;" +
+		"			saida[x+i] = aux2;" +
+		"			saida[x+i+1] = saida[x+i+1] +aux3;" +
+		"		}"	+
 		" }" +
 		"}";
     
@@ -130,33 +136,6 @@ public class Paralelo
     		" 	}"+
     		" }" +
     		"}";
-    
-//
-//    // Gera um vetor de saída numero 1 * numero 2
-//    private static String programSourceMultDec =
-//        "__kernel void "+
-//        "multiplicacaoParaleloKernelDec(__global const long *numero1,"+
-//    		"      __global const long *numero2,"+
-//    		"	   __const int tamanhoNumero1,"+		
-//    		"      __global long* saida)" +
-//    		"{" +
-//    		
-//    		" for (int i = 0; i < get_global_size(0) + get_global_size(1); i++)" +
-//    		" 		saida[i] = 0;" +
-//    		" " +
-//    		
-//    		" int x = get_global_id(0);" +
-//    		" int y = get_global_id(1);" +
-//    		" long aux,aux2,aux3; " +
-//    		
-//    		
-//    		" aux = numero1[x] * numero2[y];" + 
-//    		" aux2 = aux % 100;" + // mod, remainder
-//    		" aux3 = aux / 100;" +  
-//    		//" aux2 = aux % 1000000000;" + // mod, remainder
-//    		//" aux3 = aux / 1000000000;" +
-//    		" saida[x+(tamanhoNumero1*y)] = aux ; " + 
-//    		"}";
     
     public static long[] somaParalelo(long[]numero1, long[] numero2){
          
@@ -207,9 +186,9 @@ public class Paralelo
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelHexadec",tamanhoNumero1,tamanhoNumero2);
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec2D",tamanhoNumero1,tamanhoNumero2);
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec1D",tamanhoNumero1,tamanhoNumero2);
+        //dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelHexadec",tamanhoNumero1,tamanhoNumero2);
+        //dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec2D",tamanhoNumero1,tamanhoNumero2);
+//        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec1D",tamanhoNumero1,tamanhoNumero2);
         dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec0D",tamanhoNumero1,tamanhoNumero2);
         
         return dstArray;
@@ -321,13 +300,25 @@ public class Paralelo
         }
       
         // Set the work-item dimensions
-//        long global_work_size[] = new long[]{tamanhoNumero1,tamanhoNumero2};
-//        long local_work_size[] = new long[]{1,1};
-        long global_work_size[] = new long[]{tamanhoNumero1};
-        long local_work_size[] = new long[]{1};
-
         
-        // Execute the kernel
+       long[] global_work_size = null;
+       long[] local_work_size = null;
+        
+        if (operacao == "somaParaleloKernel"){
+        	global_work_size = new long[]{numeroDeWork};
+            local_work_size = new long[]{1};
+        }else if (operacao == "multiplicacaoParaleloKernelDec2D" || operacao == "multiplicacaoParaleloKernelHexadec"){
+        	global_work_size = new long[]{tamanhoNumero1,tamanhoNumero2};
+        	local_work_size = new long[]{1,1};
+        }else if (operacao == "multiplicacaoParaleloKernelDec1D"){
+        	global_work_size = new long[]{tamanhoNumero2};
+        	local_work_size = new long[]{1};
+        }else if (operacao == "multiplicacaoParaleloKernelDec0D"){
+        	global_work_size = new long[]{1};
+        	local_work_size = new long[]{1};
+        }
+        
+		// Execute the kernel
         clEnqueueNDRangeKernel(commandQueue, kernel,1, null,
             global_work_size, local_work_size, 0, null, null);
         
