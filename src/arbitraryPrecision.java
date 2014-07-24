@@ -36,7 +36,7 @@ public class arbitraryPrecision {
 		size = definirTamanhoColunas(arquitetura,"multiplicacao");
 
 		// TESTE
-//		size = 8;
+		size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo pra soma vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -503,7 +503,9 @@ public class arbitraryPrecision {
 		for (int i=0; i < numero2.length; i++){ // pega coluna por coluna do multiplicador
 
 			long coluna = numero2[i];
-			
+			if (coluna == 0){
+				contadorGeral = contadorGeral + size;
+			}
 			while (coluna >= 1){ // itera digito por digito do multiplicador
 								
 				long digito = coluna % 10; // pega o ultimo digito				
@@ -526,7 +528,7 @@ public class arbitraryPrecision {
 				}
 				resultado = aux.toString();
 				
-				//System.out.println(resultado +" + "+ resultadoMult );
+//				System.out.println(resultado +" + "+ resultadoMult );
 
 				resultadoMult = somar(resultado,resultadoMult,size,"paralelo"); // Soma a multiplicacao com a soma total ja encontrada
 																	// Necessario utilizar soma de bignums pois a soma total

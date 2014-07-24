@@ -95,6 +95,8 @@ public class Paralelo
 		" 	aux3 = aux / 100000000;" +
 		"	atomic_add(&saida[x+i],aux2); " +
 		"   atomic_add(&saida[x+i+1],aux3); " +
+		"	atomic_add(&saida[x+i+1],saida[x+i] / 100000000);" +
+		"	atomic_min(&saida[x+i],saida[x+i] % 100000000); " +
 //		"	if (saida[x+i] >= 100000000){" +
 //		"		aux2 = saida[x+i] % 100000000;"	+
 //		" 		aux3 = saida[x+i] / 100000000;" +
