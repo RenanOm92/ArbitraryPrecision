@@ -59,12 +59,13 @@ public class Paralelo
     		
     		" int x = get_global_id(0);" +
     		" int y = get_global_id(1);" +
-    		" long aux,aux2,aux3; " +
+    		" long aux; " +
+    		" int aux2,aux3; " +
     		
     		
     		" aux = numero1[x] * numero2[y];" + 
-    		" aux2 = aux % 1000000000;" + // mod, remainder
-    		" aux3 = aux / 1000000000;" +
+    		" aux2 = aux % 100000000;" + // mod, remainder
+    		" aux3 = aux / 100000000;" +
     		" saida[x+y] = saida[x+y] + aux2; " +
     		" saida[x+y+1] = saida[x+y+1] + aux3; " +
     		"}";
@@ -75,7 +76,7 @@ public class Paralelo
     	"multiplicacaoParaleloKernelDec1D(__global const long *numero1,"+
 		"      __global const long *numero2,"+
 		"	   __const int tamanhoNumero2,"+		
-		"      __global long* saida)" +
+		"      __global int* saida)" +
 		"{" +
 		
 		" for (int i = 0; i < get_global_size(0) + tamanhoNumero2; i++)" +
@@ -84,22 +85,22 @@ public class Paralelo
 		
 		" int x = get_global_id(0);" +
 
-		" long aux,aux2,aux3; " +
-		
+		" long aux; " +
+		" int aux2,aux3; " +		
 		
 
 		" for (int i = 0; i < tamanhoNumero2  ; i++){" +
 		" 	aux = numero1[x] * numero2[i];" + 
-		" 	aux2 = aux % 1000000000;" + // mod, remainder
-		" 	aux3 = aux / 1000000000;" +
-		"	saida[x+i] =  saida[x+i] + aux2;" +
-		"	saida[x+i+1] = saida[x+i+1] + aux3; " + 
-		"		if (saida[x+i] >= 1000000000){" +
-		"			aux2 = saida[x+i] % 1000000000;"	+
-		" 			aux3 = saida[x+i] / 1000000000;" +
-		"			saida[x+i] = aux2;" +
-		"			saida[x+i+1] = saida[x+i+1] +aux3;" +
-		"		}"	+
+		" 	aux2 = aux % 100000000;" + // mod, remainder
+		" 	aux3 = aux / 100000000;" +
+		"	atomic_add(&saida[x+i],aux2); " +
+		"   atomic_add(&saida[x+i+1],aux3); " +
+//		"	if (saida[x+i] >= 100000000){" +
+//		"		aux2 = saida[x+i] % 100000000;"	+
+//		" 		aux3 = saida[x+i] / 100000000;" +
+//		"		atomic_min(&saida[x+i],0); " +
+//		"   	atomic_add(&saida[x+i+1],aux3); " +
+//		"	}"	+
 		" }" +
 		"}";
     
@@ -170,7 +171,7 @@ public class Paralelo
         return dstArray;
     }
     
-    public static long[] multiplicaParalelo(long[]numero1, long[] numero2){
+    public static long[] multiplicaParalelo(long[]numero1, long[] numero2,String tipo){
         
         int numeroDeWork;
         numeroDeWork = numero1.length + numero2.length;
@@ -179,20 +180,61 @@ public class Paralelo
         int tamanhoNumero2 = numero2.length;
         
         long[] srcArrayA = numero1;
-        long[] srcArrayB = numero2;      
+        long[] srcArrayB = numero2;   
         long[] dstArray = new long[numeroDeWork];
      
         Pointer srcA = Pointer.to(srcArrayA);
         Pointer srcB = Pointer.to(srcArrayB);
         Pointer dst = Pointer.to(dstArray);
 
-        //dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelHexadec",tamanhoNumero1,tamanhoNumero2);
-        //dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec2D",tamanhoNumero1,tamanhoNumero2);
-//        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec1D",tamanhoNumero1,tamanhoNumero2);
-        dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec0D",tamanhoNumero1,tamanhoNumero2);
+        if (tipo.equals("0D"))
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec0D",tamanhoNumero1,tamanhoNumero2);
+        else if (tipo.equals("1D"))
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec1D",tamanhoNumero1,tamanhoNumero2);
+        else if (tipo.equals("2D"))
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec2D",tamanhoNumero1,tamanhoNumero2);
+        else
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelHexadec",tamanhoNumero1,tamanhoNumero2);
+        
+    	for (int i = 0; i < dstArray.length; i++){
+			System.out.println(i+" "+dstArray[i]);
+		}
         
         return dstArray;
     }
+    
+    public static int[] multiplicaParaleloInt(long[]numero1, long[] numero2,String tipo){
+        
+        int numeroDeWork;
+        numeroDeWork = numero1.length + numero2.length;
+
+        int tamanhoNumero1 = numero1.length;
+        int tamanhoNumero2 = numero2.length;
+        
+        long[] srcArrayA = numero1;
+        long[] srcArrayB = numero2;   
+        int[] dstArray = new int[numeroDeWork];
+     
+        Pointer srcA = Pointer.to(srcArrayA);
+        Pointer srcB = Pointer.to(srcArrayB);
+        Pointer dst = Pointer.to(dstArray);
+
+        if (tipo.equals("0D"))
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec0D",tamanhoNumero1,tamanhoNumero2);
+        else if (tipo.equals("1D"))
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec1D",tamanhoNumero1,tamanhoNumero2);
+        else if (tipo.equals("2D"))
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelDec2D",tamanhoNumero1,tamanhoNumero2);
+        else
+        	dst = chamandoOpenCL(srcA,srcB,dst,numeroDeWork,"multiplicacaoParaleloKernelHexadec",tamanhoNumero1,tamanhoNumero2);
+        
+    	for (int i = 0; i < dstArray.length; i++){
+			System.out.println(i+" "+dstArray[i]);
+		}
+        
+        return dstArray;
+    }
+    
     
     public static Pointer chamandoOpenCL(Pointer srcA, Pointer srcB, Pointer dst, int numeroDeWork, String operacao,int tamanhoNumero1, int tamanhoNumero2){
     	
@@ -246,9 +288,16 @@ public class Paralelo
         memObjects[1] = clCreateBuffer(context, 
             CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
             Sizeof.cl_long * numeroDeWork, srcB, null);
-        memObjects[2] = clCreateBuffer(context, 
+        if (operacao == "somaParaleloKernel" || operacao == "multiplicacaoParaleloKernelDec0D"){
+        	memObjects[2] = clCreateBuffer(context, 
             CL_MEM_READ_WRITE, 
             Sizeof.cl_long * numeroDeWork, null, null);
+        }else{
+        	memObjects[2] = clCreateBuffer(context, 
+            CL_MEM_READ_WRITE, 
+            Sizeof.cl_int * numeroDeWork, null, null);
+        }
+        
         
         cl_program program = null;
         
@@ -311,7 +360,7 @@ public class Paralelo
         	global_work_size = new long[]{tamanhoNumero1,tamanhoNumero2};
         	local_work_size = new long[]{1,1};
         }else if (operacao == "multiplicacaoParaleloKernelDec1D"){
-        	global_work_size = new long[]{tamanhoNumero2};
+        	global_work_size = new long[]{tamanhoNumero1};
         	local_work_size = new long[]{1};
         }else if (operacao == "multiplicacaoParaleloKernelDec0D"){
         	global_work_size = new long[]{1};
@@ -323,8 +372,14 @@ public class Paralelo
             global_work_size, local_work_size, 0, null, null);
         
         // Read the output data
-        clEnqueueReadBuffer(commandQueue, memObjects[2], CL_TRUE, 0,
-           numeroDeWork * Sizeof.cl_long, dst, 0, null, null);
+        if (operacao == "somaParaleloKernel" || operacao == "multiplicacaoParaleloKernelDec0D"){
+        	clEnqueueReadBuffer(commandQueue, memObjects[2], CL_TRUE, 0,
+        			numeroDeWork * Sizeof.cl_long, dst, 0, null, null);
+        }else{
+        	clEnqueueReadBuffer(commandQueue, memObjects[2], CL_TRUE, 0,
+        			numeroDeWork * Sizeof.cl_int, dst, 0, null, null);
+        }
+        
         
         // Release kernel, program, and memory objects
         clReleaseMemObject(memObjects[0]);

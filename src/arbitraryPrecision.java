@@ -1,21 +1,32 @@
 // Codigo desenvolvido por Renan Oliveira.
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.math.BigInteger;
 
 public class arbitraryPrecision {
 	public static void main (String []args) throws IOException{
 		
-		BufferedReader teste = new BufferedReader ( new InputStreamReader(System.in));
-		System.out.println("Digite numero 1: ");
-		String st1 = teste.readLine();
-		System.out.println("Digite numero 2: ");
-		String st2 = teste.readLine();		
-				
+		String operacao = args[0];
+		String arquivo_numero1 = args[1];
+		String arquivo_numero2 = args[2];
+		BufferedReader leitor = new BufferedReader ( new FileReader(arquivo_numero1));
+//		BufferedReader leitor = new BufferedReader ( new InputStreamReader(System.in));
+//		System.out.println("Digite numero 1: ");
+		String st1 = leitor.readLine();
+		System.out.println("Numero 1 lido: \n"+st1);
+		leitor = new BufferedReader ( new FileReader(arquivo_numero2));
+//		System.out.println("Digite numero 2: ");
+		String st2 = leitor.readLine();				 
+		System.out.println("Numero 2 lido: \n"+st2);
+		
+		System.out.println("\n---------------------------------\n");
+		
 		int arquitetura = 64;
 		
 		int size;
@@ -25,7 +36,7 @@ public class arbitraryPrecision {
 		size = definirTamanhoColunas(arquitetura,"multiplicacao");
 
 		// TESTE
-//		size = 2;
+//		size = 8;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo pra soma vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -39,16 +50,132 @@ public class arbitraryPrecision {
 		
 //		Arquitetura máxima suportada é 64x.	
 		
-		String resultadoSoma;
+		BufferedReader leitor2 = new BufferedReader ( new InputStreamReader(System.in));
+		String repetir = "s";
 		
-		long tempoInicio = System.currentTimeMillis();
+		long tempoInicio;
 		
-		resultadoSoma = somar(st1,st2,size);
+		while (!repetir.equals("n")){
+			
 		
-		System.out.println("Resultado soma: "+resultadoSoma);
-		System.out.println("Tempo da soma : "+(System.currentTimeMillis()-tempoInicio)+" ms");	
+			if (operacao.equals("SomaS")){
+				
+				String resultadoSoma;
+				
+				tempoInicio = System.currentTimeMillis();
+				resultadoSoma = somar(st1,st2,size,"sequencial");
+				
+				System.out.println("Resultado da soma Sequencial: \n"+resultadoSoma);
+				System.out.println("Tempo da soma Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
+				
+				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
+				
+				if (resultadoSomaBigIntegerJava.equals(resultadoSoma)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
+				
+			}else if (operacao.equals("SomaP")){
+				String resultadoSoma;
+				
+				tempoInicio = System.currentTimeMillis();
+				resultadoSoma = somar(st1,st2,size,"paralelo");
+				
+				System.out.println("Resultado da soma em OpenCL: \n"+resultadoSoma);
+				System.out.println("Tempo da soma em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
+				
+				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
+				
+				if (resultadoSomaBigIntegerJava.equals(resultadoSoma)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
+			
+			}else if (operacao.equals("MultS")){
+				String resultadoMult;
+				
+				tempoInicio = System.currentTimeMillis();
+				resultadoMult = multiplicar(st1,st2,size,"sequencial");
+				
+				System.out.println("Resultado da multiplicacao Sequencial: \n"+resultadoMult);
+				System.out.println("Tempo da multiplicacao Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");
+			
+				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
+				
+				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
+				
+			}else if (operacao.equals("MultP0D")){
+				
+				String resultadoMult;
+				
+				tempoInicio = System.currentTimeMillis();
+				resultadoMult = multiplicar(st1,st2,9,"0D");
+				
+				System.out.println("Resultado da multiplicacao em OpenCL 0D: \n"+resultadoMult);
+				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
+			
+				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
+				
+				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
+			
+			}else if (operacao.equals("MultP1D")){
+				String resultadoMult;
+				
+				tempoInicio = System.currentTimeMillis();
+				resultadoMult = multiplicar(st1,st2,8,"1D");
+				
+				System.out.println("Resultado da multiplicacao em OpenCL 1D: \n"+resultadoMult);
+				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
+			
+				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
+				
+				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
+			}else if (operacao.equals("MultP2D")){
+				String resultadoMult;
+				
+				tempoInicio = System.currentTimeMillis();
+				resultadoMult = multiplicar(st1,st2,8,"2D");
+				
+				System.out.println("Resultado da multiplicacao em OpenCL 2D: \n"+resultadoMult);
+				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
+			
+				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
+				
+				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
+			}else{
+				System.out.println("Operacao nao reconhecida! Tente novamente:\nSomaS = Soma Sequencial\nSomaP = Soma Paralelo\nMultS = Multiplicacao Sequencial\nMultP0D = Multiplicacao Paralelo 0D\nMultP1D = Multiplicacao Paralelo 1D\nMultP2D = Multiplicacao Paralelo 2D");
+			}
 		
-		multiplicar(st1,st2,size);
+			System.out.println("\n---------------------------------\n");
+		
+			System.out.println("Pretende realizar outra operacao? s/n");
+		
+			repetir = leitor2.readLine();
+			if (!repetir.equals("n")){
+				System.out.println("Digite a operacao: ");
+				operacao = leitor2.readLine();
+			}
+		}
+		
+		
 		
 		
 	}
@@ -111,31 +238,24 @@ public class arbitraryPrecision {
 		return numero;
 	}
 	
-	public static String somar(String st1, String st2,int size){
+	public static String somar(String st1, String st2,int size,String tipo){
 		
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
-
-//		SOMA SEQUENCIAL
 		
-//		long[] numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);	
-
-//		String[] numero = passarCarry(numeroParcial,size);		
-
-//		String soma = concatenar(numero);	
-//		return soma;
-
+		long[] numeroParcial;
 		
-//		SOMA PARALELO
+		if (tipo.equals("sequencial")){		//		SOMA SEQUENCIAL			
+			numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);	
+		}else{ 								//		SOMA PARALELO
+			numeroParcial = fazerSomaEmColunasParalelo(numero1, numero2);
+
+		}
+		String[] numero = passarCarry(numeroParcial,size);		
+
+		String soma = concatenarString(numero);
 		
-		long[] numeroParcial2 = fazerSomaEmColunasParalelo(numero1, numero2);
-
-		String[] numerox = passarCarry(numeroParcial2,size);		
-
-		String soma2 = concatenarString(numerox);
-		return soma2;
-
-		
+		return soma;
 	}
 		
 	public static long[] fazerSomaEmColunasParalelo(long[] numero1,long[] numero2){
@@ -241,7 +361,6 @@ public class arbitraryPrecision {
 	public static String concatenarLong(long[] numero){
 		StringBuilder saida = new StringBuilder();
 		int tamanho = numero.length;
-		int contador = 1;
 		
 		if (numero[tamanho-1] != 0){
 			saida.append(numero[tamanho-1]);
@@ -296,27 +415,85 @@ public class arbitraryPrecision {
 				
 			}
 		}
+
+		return saida.toString();
+	}
+	
+	public static String concatenarInt(int[] numero){
+		StringBuilder saida = new StringBuilder();
+		int tamanho = numero.length;
 		
-		
+		if (numero[tamanho-1] != 0){
+			saida.append(numero[tamanho-1]);
+			
+			for (int i = tamanho -2; i >= 0 ; i--){	
+				
+				// Completa com 0.
+				if (numero[i] < 10)
+					saida.append("0000000");
+				else if (numero[i] < 100)
+					saida.append("000000");
+				else if (numero[i] < 1000)
+					saida.append("00000");
+				else if (numero[i] < 10000)
+					saida.append("0000");
+				else if (numero[i] < 100000)
+					saida.append("000");
+				else if (numero[i] < 1000000)
+					saida.append("00");
+				else if (numero[i] < 10000000)
+					saida.append("0");
+//				else if (numero[i] < 100000000)
+//					saida.append("0");
+						
+				saida.append(numero[i]);
+				
+			}
+		}else{
+			saida.append(numero[tamanho-2]);
+			
+			for (int i = tamanho -3; i >= 0 ; i--){	
+				
+				// Completa com 0.
+				if (numero[i] < 10)
+					saida.append("0000000");
+				else if (numero[i] < 100)
+					saida.append("000000");
+				else if (numero[i] < 1000)
+					saida.append("00000");
+				else if (numero[i] < 10000)
+					saida.append("0000");
+				else if (numero[i] < 100000)
+					saida.append("000");
+				else if (numero[i] < 1000000)
+					saida.append("00");
+				else if (numero[i] < 10000000)
+					saida.append("0");
+//				else if (numero[i] < 100000000)
+//					saida.append("0");
+						
+				saida.append(numero[i]);
+				
+			}
+		}
 
 		return saida.toString();
 	}	
 	
-	public static void multiplicar (String st1, String st2, int size){
+	public static String multiplicar (String st1, String st2, int size,String tipo){
 
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
 		
-		long tempoInicio = System.currentTimeMillis();
-		multiplicarSequencial(numero1, numero2, size);
-		System.out.println("Tempo da multiplicação seq.: "+(System.currentTimeMillis()-tempoInicio)+" ms");
+		if (tipo.equals("sequencial")){
+			return multiplicarSequencial(numero1, numero2, size);
+		}else{
+			return multiplicarParalelo(numero1, numero2, size,tipo);
+		}
 		
-		tempoInicio = System.currentTimeMillis();
-		multiplicarParalelo(numero1, numero2, size);
-		System.out.println("Tempo da multiplicação em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 	}
 	
-	public static void multiplicarSequencial(long[] numero1, long[] numero2,int size){
+	public static String multiplicarSequencial(long[] numero1, long[] numero2,int size){
 		String[] resultadoParcial;
 		long[] multiplicacao = new long[numero1.length];
 		String resultado;
@@ -351,7 +528,7 @@ public class arbitraryPrecision {
 				
 				//System.out.println(resultado +" + "+ resultadoMult );
 
-				resultadoMult = somar(resultado,resultadoMult,size); // Soma a multiplicacao com a soma total ja encontrada
+				resultadoMult = somar(resultado,resultadoMult,size,"paralelo"); // Soma a multiplicacao com a soma total ja encontrada
 																	// Necessario utilizar soma de bignums pois a soma total
 																	// pode extrapolar o limite máximo que o tipo long em java armazena
 				coluna = coluna / 10;
@@ -359,17 +536,26 @@ public class arbitraryPrecision {
 			}
 
 		}
-		System.out.println("Resultado multiplicação: "+resultadoMult);
+		
+		return resultadoMult;
 		
 	}
 	
-	public static void multiplicarParalelo(long[] numero1, long[] numero2, int size){
-		long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2);
-		
-		for (int i = 0; i < resultadoMultParalelo.length; i++){
-			System.out.println(i+" "+resultadoMultParalelo[i]);
+	public static String multiplicarParalelo(long[] numero1, long[] numero2, int size,String tipo){
+		String resultadoFinal;
+		if (tipo.equals("1D")){
+			int[] resultadoMultParalelo = Paralelo.multiplicaParaleloInt(numero1, numero2,tipo);
+			resultadoFinal = concatenarInt(resultadoMultParalelo);
+		}else{
+			long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2,tipo);
+			resultadoFinal = concatenarLong(resultadoMultParalelo);
 		}
+			
 		
+//		for (int i = 0; i < resultadoMultParalelo.length; i++){
+//			System.out.println(i+" "+resultadoMultParalelo[i]);
+//		}
+
 		
 		/*
 		 *  casos de teste
@@ -388,10 +574,25 @@ public class arbitraryPrecision {
 		//String[] resultadoCarry = passarCarry(resultadoMultParalelo, size);	
 		//String resultadoFinal = concatenarString(resultadoCarry);
 		
-		String resultadoFinal = concatenarLong(resultadoMultParalelo);
 		
-		System.out.println("Resultado multiplicação: "+resultadoFinal);	
 		
+		return resultadoFinal;
+	}
+	
+	public static String SomaBigIntegerJava(String numero1, String numero2){
+		BigInteger number1 = new BigInteger(numero1);
+		BigInteger number2 = new BigInteger(numero2);
+		
+		BigInteger soma = number1.add(number2);
+		return soma.toString();
+	}
+	
+	public static String MultBigIntegerJava(String numero1, String numero2){
+		BigInteger number1 = new BigInteger(numero1);
+		BigInteger number2 = new BigInteger(numero2);
+		
+		BigInteger mult = number1.multiply(number2);
+		return mult.toString();
 	}
 	
 }
