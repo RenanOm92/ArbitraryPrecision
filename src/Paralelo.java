@@ -125,8 +125,10 @@ public class Paralelo
 		" 		aux3 = saida[x+i] / 100000000;" +
 		"		atomic_xchg(&saida[x+i],aux2); " +
 		"   	atomic_add(&saida[x+i+1],aux3); " +
-//		"		saida[x+i] = aux2;" +
-//    	"		saida[x+i+1] = saida[x+i+1] + aux3;" +
+
+//		"		aux2 = atomic_xchg(&saida[x+i],(saida[x+i] % 100000000));" +
+//		"		aux3 = aux2 / 100000000;" +
+//    	"		atomic_add(&saida[x+i+1],aux3);" +
 //		"	}"	+
 //		"	release(&semaphor[x+i]);" +
 		" 	ReleaseSemaphor(&semaphor[x+i]);" +
