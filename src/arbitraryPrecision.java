@@ -36,7 +36,7 @@ public class arbitraryPrecision {
 		size = definirTamanhoColunas(arquitetura,"multiplicacao");
 
 		// TESTE
-		size = 2;
+//		size = 2;
 		
 //		Arquitetura que vou testar vai ser x10, 10 bits, numero maior e 1024, 
 //		entao o numero maximo pra soma vai usar 9 bits: 512, somando eles chegam a 1024;
@@ -443,8 +443,6 @@ public class arbitraryPrecision {
 					saida.append("00");
 				else if (numero[i] < 10000000)
 					saida.append("0");
-//				else if (numero[i] < 100000000)
-//					saida.append("0");
 						
 				saida.append(numero[i]);
 				
@@ -469,8 +467,6 @@ public class arbitraryPrecision {
 					saida.append("00");
 				else if (numero[i] < 10000000)
 					saida.append("0");
-//				else if (numero[i] < 100000000)
-//					saida.append("0");
 						
 				saida.append(numero[i]);
 				
