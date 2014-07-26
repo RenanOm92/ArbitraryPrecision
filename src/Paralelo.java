@@ -115,16 +115,17 @@ public class Paralelo
 		" 	aux = numero1[x] * numero2[i];" + 
 		" 	aux2 = aux % 100000000;" + // mod, remainder
 		" 	aux3 = aux / 100000000;" +
+
 		"	atomic_add(&saida[x+i],aux2); " +
 		"   atomic_add(&saida[x+i+1],aux3); " +
 		"	GetSemaphor(&semaphor[x+i]); " +
 //		"	acquire(&semaphor[x+i]);" +
 //		"	if (saida[x+i] >= 100000000){" +
-
-		"		aux2 = saida[x+i] % 100000000;"	+
-		" 		aux3 = saida[x+i] / 100000000;" +
-		"		atomic_xchg(&saida[x+i],aux2); " +
-		"   	atomic_add(&saida[x+i+1],aux3); " +
+//
+//		"		aux2 = saida[x+i] % 100000000;"	+
+//		" 		aux3 = saida[x+i] / 100000000;" +
+//		"		atomic_xchg(&saida[x+i],aux2); " +
+//		"   	atomic_add(&saida[x+i+1],aux3); " +
 
 //		"		aux2 = atomic_xchg(&saida[x+i],(saida[x+i] % 100000000));" +
 //		"		aux3 = aux2 / 100000000;" +
