@@ -30,10 +30,6 @@ public class arbitraryPrecision {
 		int arquitetura = 64;
 		
 		int size;
-		
-		size = definirTamanhoColunas(arquitetura,"soma");
-
-		size = definirTamanhoColunas(arquitetura,"multiplicacao");
 
 		// TESTE
 //		size = 2;
@@ -59,7 +55,7 @@ public class arbitraryPrecision {
 			
 		
 			if (operacao.equals("SomaS")){
-				
+				size = definirTamanhoColunas(arquitetura,"soma");
 				String resultadoSoma;
 				
 				tempoInicio = System.currentTimeMillis();
@@ -77,6 +73,7 @@ public class arbitraryPrecision {
 				}
 				
 			}else if (operacao.equals("SomaP")){
+				size = definirTamanhoColunas(arquitetura,"soma");
 				String resultadoSoma;
 				
 				tempoInicio = System.currentTimeMillis();
@@ -94,6 +91,7 @@ public class arbitraryPrecision {
 				}
 			
 			}else if (operacao.equals("MultS")){
+				size = definirTamanhoColunas(arquitetura,"multiplicacao");
 				String resultadoMult;
 				
 				tempoInicio = System.currentTimeMillis();
@@ -242,11 +240,11 @@ public class arbitraryPrecision {
 		
 		final long[] numero1 = separarNumeros(st1, size);
 		final long[] numero2 = separarNumeros(st2, size);
-		
+
 		long[] numeroParcial;
-		
+
 		if (tipo.equals("sequencial")){		//		SOMA SEQUENCIAL			
-			numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);	
+			numeroParcial = fazerSomaEmColunasSequencial(numero1,numero2);
 		}else{ 								//		SOMA PARALELO
 			numeroParcial = fazerSomaEmColunasParalelo(numero1, numero2);
 
@@ -277,9 +275,7 @@ public class arbitraryPrecision {
 			}
 			
 			for (int i = 0; i < numero1.length; i++){
-				//System.out.print(numero1[i]+ " + "+numero2[i]+" = ");
 				numeroFinal[i] = numero1[i] + numero2[i];
-				//System.out.println(numeroFinal[i]);
 			}
 		}else{
 			numeroFinal = new long[numero1.length];
@@ -287,18 +283,11 @@ public class arbitraryPrecision {
 				numeroFinal[i] = numero1[i];
 			}
 			for (int i = 0; i < numero2.length; i++){
-				//System.out.print(numero1[i]+ " + "+numero2[i]+" = ");
 				numeroFinal[i] = numero1[i] + numero2[i];
-				//System.out.println(numeroFinal[i]);
 			}
-		}
+		}		
 		
-//		for (int i = 0; i < numeroFinal.length; i++){ // Tem que pegar e completar de 0.
-//			System.out.println(numeroFinal[i]);
-//		}
-		
-		return numeroFinal;
-		
+		return numeroFinal;		
 	}
 	
 	public static String[] passarCarry(long[] numero, int size){
