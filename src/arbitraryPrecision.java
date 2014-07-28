@@ -130,7 +130,7 @@ public class arbitraryPrecision {
 				String resultadoMult;
 				
 				tempoInicio = System.currentTimeMillis();
-				resultadoMult = multiplicar(st1,st2,8,"1D");
+				resultadoMult = multiplicar(st1,st2,9,"1D");
 				
 				System.out.println("Resultado da multiplicacao em OpenCL 1D: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
@@ -419,18 +419,20 @@ public class arbitraryPrecision {
 				
 				// Completa com 0.
 				if (numero[i] < 10)
-					saida.append("0000000");
+					saida.append("00000000");
 				else if (numero[i] < 100)
-					saida.append("000000");
+					saida.append("0000000");
 				else if (numero[i] < 1000)
-					saida.append("00000");
+					saida.append("000000");
 				else if (numero[i] < 10000)
-					saida.append("0000");
+					saida.append("00000");
 				else if (numero[i] < 100000)
-					saida.append("000");
+					saida.append("0000");
 				else if (numero[i] < 1000000)
-					saida.append("00");
+					saida.append("000");
 				else if (numero[i] < 10000000)
+					saida.append("00");
+				else if (numero[i] < 100000000)
 					saida.append("0");
 						
 				saida.append(numero[i]);
@@ -443,18 +445,20 @@ public class arbitraryPrecision {
 				
 				// Completa com 0.
 				if (numero[i] < 10)
-					saida.append("0000000");
+					saida.append("00000000");
 				else if (numero[i] < 100)
-					saida.append("000000");
+					saida.append("0000000");
 				else if (numero[i] < 1000)
-					saida.append("00000");
+					saida.append("000000");
 				else if (numero[i] < 10000)
-					saida.append("0000");
+					saida.append("00000");
 				else if (numero[i] < 100000)
-					saida.append("000");
+					saida.append("0000");
 				else if (numero[i] < 1000000)
-					saida.append("00");
+					saida.append("000");
 				else if (numero[i] < 10000000)
+					saida.append("00");
+				else if (numero[i] < 100000000)
 					saida.append("0");
 						
 				saida.append(numero[i]);
@@ -483,49 +487,32 @@ public class arbitraryPrecision {
 		long[] multiplicacao = new long[numero1.length];
 		String resultado;
 		String resultadoMult = "0";
-		int contadorGeral = 0;
-		
+		int contadorGeral = 0;		
 		for (int i=0; i < numero2.length; i++){ // pega coluna por coluna do multiplicador
-
 			long coluna = numero2[i];
-			if (coluna == 0){
-				contadorGeral = contadorGeral + size;
-			}
-			while (coluna >= 1){ // itera digito por digito do multiplicador
-								
-				long digito = coluna % 10; // pega o ultimo digito				
-				
+			if (coluna == 0){	contadorGeral = contadorGeral + size;	}
+			while (coluna >= 1){ // itera digito por digito do multiplicador								
+				long digito = coluna % 10; // pega o ultimo digito							
 				for (int j=0; j < numero1.length; j++){
 					multiplicacao[j] = digito * numero1[j]; // multiplica o digito pelo numero 1
 				}
 				resultadoParcial = passarCarry(multiplicacao, size); // passa o carry entre os numeros
-
 				for (int z = 0 ; z < resultadoParcial.length-1; z++){
 					resultadoParcial[z] = completarComZero(resultadoParcial[z], size); // completa com 0
-				}
-				
-				resultado = concatenarString(resultadoParcial); // concatena encontrando a mult. do digito pelo numero 1
-				
+				}				
+				resultado = concatenarString(resultadoParcial); // concatena encontrando a mult. do digito pelo numero 1				
 				StringBuilder aux = new StringBuilder();
 				aux.append(resultado);
 				for (int k = 0 ; k < contadorGeral ; k++){ // coloca X números de 0 ao final da multiplicacao encontrada
 					aux.append("0");
 				}
-				resultado = aux.toString();
-				
-//				System.out.println(resultado +" + "+ resultadoMult );
-
-				resultadoMult = somar(resultado,resultadoMult,size,"paralelo"); // Soma a multiplicacao com a soma total ja encontrada
-																	// Necessario utilizar soma de bignums pois a soma total
-																	// pode extrapolar o limite máximo que o tipo long em java armazena
+				resultado = aux.toString();				
+				resultadoMult = somar(resultado,resultadoMult,size,"paralelo"); // Soma a multiplicacao com a soma total ja encontrada // Necessario utilizar soma de bignums pois a soma total pode extrapolar o limite máximo que o tipo long em java armazena														
 				coluna = coluna / 10;
 				contadorGeral++;
 			}
-
-		}
-		
-		return resultadoMult;
-		
+		}		
+		return resultadoMult;		
 	}
 	
 	public static String multiplicarParalelo(long[] numero1, long[] numero2, int size,String tipo){

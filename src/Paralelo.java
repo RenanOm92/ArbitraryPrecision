@@ -81,18 +81,7 @@ public class Paralelo
    		
    		"void ReleaseSemaphor(__global int * semaphor){" +
    		"	int prevVal = atom_xchg(semaphor, 0);" +
-   		"}" +
-   		
-		"void acquire(__global int* semaphore) {"+
-   		"    int occupied;"+
-   		"    do {"+
-   		"        occupied = atom_xchg(semaphore, 1);"+
-   		"    } while (occupied>0);"+
-   		"}"+
-   		
-		"void release(__global int* semaphore) {"+
-   		"    atom_xchg(semaphore, 0);" +
-   		"}"+
+   		"}" +   		
    		
     	"__kernel void "+
     	"multiplicacaoParaleloKernelDec1D(__global const long *numero1,"+
@@ -100,38 +89,26 @@ public class Paralelo
 		"	   __const int tamanhoNumero2,"+
 		"	   __global int* semaphor," +
 		"      __global int* saida)" +
-		"{" +
-		
+		"{" +		
 		" for (int i = 0; i < get_global_size(0) + tamanhoNumero2; i++)" +
 		" 		saida[i] = 0;" +
-		" " +
-		
+		" " +	
 		" int x = get_global_id(0);" +
-
 		" long aux; " +
 		" int aux2,aux3; " +		
-
 		" for (int i = 0; i < tamanhoNumero2  ; i++){" +
 		" 	aux = numero1[x] * numero2[i];" + 
-		" 	aux2 = aux % 100000000;" + // mod, remainder
-		" 	aux3 = aux / 100000000;" +
-
+		" 	aux2 = aux % 1000000000;" + // mod, remainder
+		" 	aux3 = aux / 1000000000;" +
 		"	atomic_add(&saida[x+i],aux2); " +
 		"   atomic_add(&saida[x+i+1],aux3); " +
 		"	GetSemaphor(&semaphor[x+i]); " +
-//		"	acquire(&semaphor[x+i]);" +
-//		"	if (saida[x+i] >= 100000000){" +
-//
-//		"		aux2 = saida[x+i] % 100000000;"	+
-//		" 		aux3 = saida[x+i] / 100000000;" +
-//		"		atomic_xchg(&saida[x+i],aux2); " +
-//		"   	atomic_add(&saida[x+i+1],aux3); " +
-
-//		"		aux2 = atomic_xchg(&saida[x+i],(saida[x+i] % 100000000));" +
-//		"		aux3 = aux2 / 100000000;" +
-//    	"		atomic_add(&saida[x+i+1],aux3);" +
-//		"	}"	+
-//		"	release(&semaphor[x+i]);" +
+		"	if (saida[x+i] >= 1000000000){" +
+		"		aux2 = saida[x+i] % 1000000000;"	+
+		" 		aux3 = saida[x+i] / 1000000000;" +
+		"		atomic_xchg(&saida[x+i],aux2); " +
+		"   	atomic_add(&saida[x+i+1],aux3); " +
+		"	}"	+
 		" 	ReleaseSemaphor(&semaphor[x+i]);" +
 		" }" +
 		"}";
@@ -144,14 +121,10 @@ public class Paralelo
     		"	   __const int tamanhoNumero1,"+
     		"	   __const int tamanhoNumero2,"+		
     		"      __global long* saida)" +
-    		"{" +
-    		
+    		"{" +    		
     		" for (int i = 0; i < tamanhoNumero1 + tamanhoNumero2; i++)" +
-    		" 		saida[i] = 0;" +
-    		
-    		" long aux,aux2,aux3; " +
-    		
-    		
+    		" 		saida[i] = 0;" +   		
+    		" long aux,aux2,aux3; " + 		
     		" for (int a = 0; a < tamanhoNumero1 ; a++){"+
     		" 	for (int b = 0; b < tamanhoNumero2  ; b++){" +
     		" 		aux = numero1[a] * numero2[b];" + 
