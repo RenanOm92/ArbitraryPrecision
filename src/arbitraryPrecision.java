@@ -53,7 +53,7 @@ public class arbitraryPrecision {
 		
 		while (!repetir.equals("n")){
 			
-		
+		for (int i = 0; i < 11; i++){
 			if (operacao.equals("SomaS")){
 				size = definirTamanhoColunas(arquitetura,"soma");
 				String resultadoSoma;
@@ -61,7 +61,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoSoma = somar(st1,st2,size,"sequencial");
 				
-				System.out.println("Resultado da soma Sequencial: \n"+resultadoSoma);
+//				System.out.println("Resultado da soma Sequencial: \n"+resultadoSoma);
 				System.out.println("Tempo da soma Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
 				
 				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
@@ -79,7 +79,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoSoma = somar(st1,st2,size,"paralelo");
 				
-				System.out.println("Resultado da soma em OpenCL: \n"+resultadoSoma);
+//				System.out.println("Resultado da soma em OpenCL: \n"+resultadoSoma);
 				System.out.println("Tempo da soma em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
 				
 				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
@@ -97,10 +97,12 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,size,"sequencial");
 				
-				System.out.println("Resultado da multiplicacao Sequencial: \n"+resultadoMult);
+//				System.out.println("Resultado da multiplicacao Sequencial: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");
-			
+				
+				tempoInicio = System.currentTimeMillis();
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
+				System.out.println("Tempo da multiplicacao BigInteger do Java: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 				
 				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
 					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
@@ -115,7 +117,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,9,"0D");
 				
-				System.out.println("Resultado da multiplicacao em OpenCL 0D: \n"+resultadoMult);
+//				System.out.println("Resultado da multiplicacao em OpenCL 0D: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
@@ -132,7 +134,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,9,"1D");
 				
-				System.out.println("Resultado da multiplicacao em OpenCL 1D: \n"+resultadoMult);
+//				System.out.println("Resultado da multiplicacao em OpenCL 1D: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
@@ -146,9 +148,9 @@ public class arbitraryPrecision {
 				String resultadoMult;
 				
 				tempoInicio = System.currentTimeMillis();
-				resultadoMult = multiplicar(st1,st2,8,"2D");
+				resultadoMult = multiplicar(st1,st2,9,"2D");
 				
-				System.out.println("Resultado da multiplicacao em OpenCL 2D: \n"+resultadoMult);
+//				System.out.println("Resultado da multiplicacao em OpenCL 2D: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
@@ -161,7 +163,7 @@ public class arbitraryPrecision {
 			}else{
 				System.out.println("Operacao nao reconhecida! Tente novamente:\nSomaS = Soma Sequencial\nSomaP = Soma Paralelo\nMultS = Multiplicacao Sequencial\nMultP0D = Multiplicacao Paralelo 0D\nMultP1D = Multiplicacao Paralelo 1D\nMultP2D = Multiplicacao Paralelo 2D");
 			}
-		
+		}
 			System.out.println("\n---------------------------------\n");
 		
 			System.out.println("Pretende realizar outra operacao? s/n");
@@ -482,47 +484,94 @@ public class arbitraryPrecision {
 		
 	}
 	
+//	public static String multiplicarSequencial(long[] numero1, long[] numero2,int size){
+//		String[] resultadoParcial;
+//		long[] multiplicacao = new long[numero1.length];
+//		String resultado;
+//		String resultadoMult = "0";
+//		int contadorGeral = 0;		
+//		for (int i=0; i < numero2.length; i++){ // pega coluna por coluna do multiplicador
+//			long coluna = numero2[i];
+//			if (coluna == 0){	contadorGeral = contadorGeral + size;	}
+//			while (coluna >= 1){ // itera digito por digito do multiplicador								
+//				long digito = coluna % 10; // pega o ultimo digito							
+//				for (int j=0; j < numero1.length; j++){
+//					multiplicacao[j] = digito * numero1[j]; // multiplica o digito pelo numero 1
+//				}
+//				resultadoParcial = passarCarry(multiplicacao, size); // passa o carry entre os numeros
+//				for (int z = 0 ; z < resultadoParcial.length-1; z++){
+//					resultadoParcial[z] = completarComZero(resultadoParcial[z], size); // completa com 0
+//				}				
+//				resultado = concatenarString(resultadoParcial); // concatena encontrando a mult. do digito pelo numero 1				
+//				StringBuilder aux = new StringBuilder();
+//				aux.append(resultado);
+//				for (int k = 0 ; k < contadorGeral ; k++){ // coloca X números de 0 ao final da multiplicacao encontrada
+//					aux.append("0");
+//				}
+//				resultado = aux.toString();				
+//				resultadoMult = somar(resultado,resultadoMult,18,"paralelo"); // Soma a multiplicacao com a soma total ja encontrada // Necessario utilizar soma de bignums pois a soma total pode extrapolar o limite máximo que o tipo long em java armazena														
+//				coluna = coluna / 10;
+//				contadorGeral++;
+//			}
+//		}		
+//		return resultadoMult;		
+//	}
+	
+//	public static String multiplicarSequencial(long[] numero1, long[] numero2,int size){
+//		String[] resultadoParcial;
+//		long multiplicacao;
+//		String resultado;
+//		String resultadoMult = "0";
+//		int contadorGeral = 0;		
+//		for (int i=0; i < numero1.length; i++){ 				
+//			for (int j=0; j < numero2.length; j++){
+//				multiplicacao = numero1[i] * numero2[j];
+//				
+//				StringBuilder aux = new StringBuilder();
+//				aux.append(multiplicacao);
+//				for (int k = 0 ; k < i+j ; k++){ // coloca X números de 0 ao final da multiplicacao encontrada
+//					aux.append("000000000");
+//				}
+//				resultado = aux.toString();
+//				resultadoMult = somar(resultado,resultadoMult,18,"paralelo");
+//			}								
+//		}		
+//		return resultadoMult;		
+//	}
+	
 	public static String multiplicarSequencial(long[] numero1, long[] numero2,int size){
-		String[] resultadoParcial;
-		long[] multiplicacao = new long[numero1.length];
+		long multiplicacao;
+		long [] saida = new long [numero1.length + numero2.length];
 		String resultado;
-		String resultadoMult = "0";
-		int contadorGeral = 0;		
-		for (int i=0; i < numero2.length; i++){ // pega coluna por coluna do multiplicador
-			long coluna = numero2[i];
-			if (coluna == 0){	contadorGeral = contadorGeral + size;	}
-			while (coluna >= 1){ // itera digito por digito do multiplicador								
-				long digito = coluna % 10; // pega o ultimo digito							
-				for (int j=0; j < numero1.length; j++){
-					multiplicacao[j] = digito * numero1[j]; // multiplica o digito pelo numero 1
+		long aux2, aux3;
+		for (int i=0; i < numero1.length; i++){ 				
+			for (int j=0; j < numero2.length; j++){
+				multiplicacao = numero1[i] * numero2[j];
+				aux2 = multiplicacao % 1000000000;
+				aux3 = multiplicacao / 1000000000;
+				saida[i+j] += aux2;
+				saida[i+j+1] += aux3;
+				if (saida[i+j] > 1000000000){
+					aux2 = saida[i+j] % 1000000000;
+					aux3 = saida[i+j] / 1000000000;
+					saida[i+j] = aux2;
+					saida[i+j+1] += aux3;
 				}
-				resultadoParcial = passarCarry(multiplicacao, size); // passa o carry entre os numeros
-				for (int z = 0 ; z < resultadoParcial.length-1; z++){
-					resultadoParcial[z] = completarComZero(resultadoParcial[z], size); // completa com 0
-				}				
-				resultado = concatenarString(resultadoParcial); // concatena encontrando a mult. do digito pelo numero 1				
-				StringBuilder aux = new StringBuilder();
-				aux.append(resultado);
-				for (int k = 0 ; k < contadorGeral ; k++){ // coloca X números de 0 ao final da multiplicacao encontrada
-					aux.append("0");
-				}
-				resultado = aux.toString();				
-				resultadoMult = somar(resultado,resultadoMult,size,"paralelo"); // Soma a multiplicacao com a soma total ja encontrada // Necessario utilizar soma de bignums pois a soma total pode extrapolar o limite máximo que o tipo long em java armazena														
-				coluna = coluna / 10;
-				contadorGeral++;
-			}
+			}								
 		}		
-		return resultadoMult;		
+		resultado = concatenarLong(saida);
+		return resultado;
 	}
 	
 	public static String multiplicarParalelo(long[] numero1, long[] numero2, int size,String tipo){
 		String resultadoFinal;
-		if (tipo.equals("1D")){
-			int[] resultadoMultParalelo = Paralelo.multiplicaParaleloInt(numero1, numero2,tipo);
-			resultadoFinal = concatenarInt(resultadoMultParalelo);
-		}else{
+		if (tipo.equals("0D")){
 			long[] resultadoMultParalelo = Paralelo.multiplicaParalelo(numero1, numero2,tipo);
 			resultadoFinal = concatenarLong(resultadoMultParalelo);
+			
+		}else{
+			int[] resultadoMultParalelo = Paralelo.multiplicaParaleloInt(numero1, numero2,tipo);
+			resultadoFinal = concatenarInt(resultadoMultParalelo);
 		}
 			
 		
