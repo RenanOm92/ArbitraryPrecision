@@ -54,7 +54,7 @@ public class arbitraryPrecision {
 		long tempoInicio;
 		
 		while (!repetir.equals("n")){
-		for (int k = 0; k < 11; k++){	
+//		for (int k = 0; k < 11; k++){	
 		if (operacao.equals("benchmark") || operacao.equals("Benchmark")){
 			for (int i = 0; i < 2; i++){
 				if (i==0){
@@ -76,18 +76,18 @@ public class arbitraryPrecision {
 					size = definirTamanhoColunas(arquitetura,"soma");
 					
 					tempo = cronometrar(st1, st2, size, "SomaS");
-					System.out.println(i+"Tempo da Soma Sequencial em Java feita pelo autor \"SomaS\": "+tempo+" ms");
+					System.out.println("Tempo da Soma Sequencial em Java feita pelo autor \"SomaS\": "+tempo+" ms");
 					
 					tempo = cronometrar(st1, st2, size, "SomaP");
-					System.out.println(i+"Tempo da Soma Paralelo em OpenCL feita pelo autor \"SomaP\": "+tempo+" ms");
+					System.out.println("Tempo da Soma Paralelo em OpenCL feita pelo autor \"SomaP\": "+tempo+" ms");
 					
 					tempo = cronometrar(st1, st2, size, "SomaBigInt");
-					System.out.println(i+"Tempo da Soma Sequencial em Java da classe BigInteger: "+tempo+" ms");
+					System.out.println("Tempo da Soma Sequencial em Java da classe BigInteger: "+tempo+" ms");
 					
 					size = definirTamanhoColunas(arquitetura,"mult");
 					
 					tempo = cronometrar(st1, st2, size, "MultS");
-					System.out.println(i+"Tempo da Multiplicacao Sequencial em Java feita pelo autor \"MultS\": "+tempo+" ms");	
+					System.out.println("Tempo da Multiplicacao Sequencial em Java feita pelo autor \"MultS\": "+tempo+" ms");	
 					
 					tempo = cronometrar(st1, st2, size, "MultP0D");
 					System.out.println("Tempo da Multiplicacao 0 dimensoes em OpenCL feita pelo autor \"MultP0D\": "+tempo+" ms");
@@ -99,7 +99,7 @@ public class arbitraryPrecision {
 					System.out.println("Tempo da Multiplicacao 2 dimensoes em OpenCL feita pelo autor \"MultP2D\": "+tempo+" ms");
 					
 					tempo = cronometrar(st1, st2, size, "MultBigInt");
-					System.out.println(i+"Tempo da Multiplicacao Sequencial em Java da classe BigInteger: "+tempo+" ms");
+					System.out.println("Tempo da Multiplicacao Sequencial em Java da classe BigInteger: "+tempo+" ms");
 					
 				}
 			}
@@ -223,7 +223,7 @@ public class arbitraryPrecision {
 			}else{
 				System.out.println("Operacao nao reconhecida! Tente novamente:\nSomaS = Soma Sequencial\nSomaP = Soma Paralelo\nMultS = Multiplicacao Sequencial\nMultP0D = Multiplicacao Paralelo 0D\nMultP1D = Multiplicacao Paralelo 1D\nMultP2D = Multiplicacao Paralelo 2D");
 			}
-		}
+//		}
 			System.out.println("\n---------------------------------\n");
 		
 			System.out.println("Pretende realizar outra operacao? s/n");
