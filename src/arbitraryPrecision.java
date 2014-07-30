@@ -49,19 +49,69 @@ public class arbitraryPrecision {
 		BufferedReader leitor2 = new BufferedReader ( new InputStreamReader(System.in));
 		String repetir = "s";
 		
+
+		
 		long tempoInicio;
 		
 		while (!repetir.equals("n")){
 			
-		for (int i = 0; i < 11; i++){
-			if (operacao.equals("SomaS")){
+		if (operacao.equals("benchmark") || operacao.equals("Benchmark")){
+			for (int i = 0; i < 2; i++){
+				if (i==0){
+					long tempo;
+					size = definirTamanhoColunas(arquitetura,"soma");
+					tempo = cronometrar(st1, st2, size, "SomaS");
+					tempo = cronometrar(st1, st2, size, "SomaP");
+					tempo = cronometrar(st1, st2, size, "SomaBigInt");
+					size = definirTamanhoColunas(arquitetura,"mult");
+					tempo = cronometrar(st1, st2, size, "MultS");
+					tempo = cronometrar(st1, st2, size, "MultP0D");	
+					tempo = cronometrar(st1, st2, size, "MultP1D");
+					tempo = cronometrar(st1, st2, size, "MultP2D");
+					tempo = cronometrar(st1, st2, size, "MultBigInt");
+					
+				}else{
+					long tempo;
+					
+					size = definirTamanhoColunas(arquitetura,"soma");
+					
+					tempo = cronometrar(st1, st2, size, "SomaS");
+					System.out.println("Tempo da Soma Sequencial em Java feita pelo autor \"SomaS\": "+tempo+" ms");
+					
+					tempo = cronometrar(st1, st2, size, "SomaP");
+					System.out.println("Tempo da Soma Paralelo em OpenCL feita pelo autor \"SomaP\": "+tempo+" ms");
+					
+					tempo = cronometrar(st1, st2, size, "SomaBigInt");
+					System.out.println("Tempo da Soma Sequencial em Java da classe BigInteger: "+tempo+" ms");
+					
+					size = definirTamanhoColunas(arquitetura,"mult");
+					
+					tempo = cronometrar(st1, st2, size, "MultS");
+					System.out.println("Tempo da Multiplicacao Sequencial em Java feita pelo autor \"MultS\": "+tempo+" ms");	
+					
+					tempo = cronometrar(st1, st2, size, "MultP0D");
+					System.out.println("Tempo da Multiplicacao 0 dimensoes em OpenCL feita pelo autor \"MultP0D\": "+tempo+" ms");
+					
+					tempo = cronometrar(st1, st2, size, "MultP1D");
+					System.out.println("Tempo da Multiplicacao 1 dimensao em OpenCL feita pelo autor \"MultP1D\": "+tempo+" ms");
+					
+					tempo = cronometrar(st1, st2, size, "MultP2D");
+					System.out.println("Tempo da Multiplicacao 2 dimensoes em OpenCL feita pelo autor \"MultP2D\": "+tempo+" ms");
+					
+					tempo = cronometrar(st1, st2, size, "MultBigInt");
+					System.out.println("Tempo da Multiplicacao Sequencial em Java da classe BigInteger: "+tempo+" ms");
+					
+				}
+			}
+			
+		}else if (operacao.equals("SomaS")){
 				size = definirTamanhoColunas(arquitetura,"soma");
 				String resultadoSoma;
 				
 				tempoInicio = System.currentTimeMillis();
 				resultadoSoma = somar(st1,st2,size,"sequencial");
 				
-//				System.out.println("Resultado da soma Sequencial: \n"+resultadoSoma);
+				System.out.println("Resultado da soma Sequencial: \n"+resultadoSoma);
 				System.out.println("Tempo da soma Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
 				
 				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
@@ -79,7 +129,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoSoma = somar(st1,st2,size,"paralelo");
 				
-//				System.out.println("Resultado da soma em OpenCL: \n"+resultadoSoma);
+				System.out.println("Resultado da soma em OpenCL: \n"+resultadoSoma);
 				System.out.println("Tempo da soma em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
 				
 				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
@@ -100,15 +150,13 @@ public class arbitraryPrecision {
 //				System.out.println("Resultado da multiplicacao Sequencial: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 				
-				tempoInicio = System.currentTimeMillis();
-				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
-				System.out.println("Tempo da multiplicacao BigInteger do Java: "+(System.currentTimeMillis()-tempoInicio)+" ms");
-				
-				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
-					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
-				}else{
-					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
-				}
+//				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
+//				
+//				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
+//					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+//				}else{
+//					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+//				}
 				
 			}else if (operacao.equals("MultP0D")){
 				
@@ -117,7 +165,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,9,"0D");
 				
-//				System.out.println("Resultado da multiplicacao em OpenCL 0D: \n"+resultadoMult);
+				System.out.println("Resultado da multiplicacao em OpenCL 0D: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
@@ -134,7 +182,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,9,"1D");
 				
-//				System.out.println("Resultado da multiplicacao em OpenCL 1D: \n"+resultadoMult);
+				System.out.println("Resultado da multiplicacao em OpenCL 1D: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
@@ -150,7 +198,7 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,9,"2D");
 				
-//				System.out.println("Resultado da multiplicacao em OpenCL 2D: \n"+resultadoMult);
+				System.out.println("Resultado da multiplicacao em OpenCL 2D: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
@@ -163,7 +211,7 @@ public class arbitraryPrecision {
 			}else{
 				System.out.println("Operacao nao reconhecida! Tente novamente:\nSomaS = Soma Sequencial\nSomaP = Soma Paralelo\nMultS = Multiplicacao Sequencial\nMultP0D = Multiplicacao Paralelo 0D\nMultP1D = Multiplicacao Paralelo 1D\nMultP2D = Multiplicacao Paralelo 2D");
 			}
-		}
+		
 			System.out.println("\n---------------------------------\n");
 		
 			System.out.println("Pretende realizar outra operacao? s/n");
@@ -175,9 +223,38 @@ public class arbitraryPrecision {
 			}
 		}
 		
+	}
+	
+	public static long cronometrar(String numero1, String numero2, int size, String operacao){
+		long tempoInicio = 0;
 		
+		if (operacao.equals("SomaS")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoSoma = somar(numero1,numero2,size,"sequencial");
+		}else if (operacao.equals("SomaP")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoSoma = somar(numero1,numero2,size,"paralelo");
+		}else if (operacao.equals("SomaBigInt")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoSoma = SomaBigIntegerJava(numero1,numero2);
+		}else if (operacao.equals("MultS")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoMult = multiplicar(numero1,numero2,size,"sequencial");
+		}else if (operacao.equals("MultP0D")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoMult = multiplicar(numero1,numero2,size,"0D");
+		}else if (operacao.equals("MultP1D")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoMult = multiplicar(numero1,numero2,size,"1D");
+		}else if (operacao.equals("MultP2D")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoMult = multiplicar(numero1,numero2,size,"2D");
+		}else if (operacao.equals("MultBigInt")){
+			tempoInicio = System.currentTimeMillis();
+			String resultadoSoma = MultBigIntegerJava(numero1,numero2);
+		}
 		
-		
+		return System.currentTimeMillis()-tempoInicio;		
 	}
 	
 	public static int definirTamanhoColunas(int arquitetura, String operacao){
