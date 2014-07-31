@@ -1,9 +1,11 @@
 // Codigo desenvolvido por Renan Oliveira.
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -54,7 +56,7 @@ public class arbitraryPrecision {
 		long tempoInicio;
 		
 		while (!repetir.equals("n")){
-//		for (int k = 0; k < 11; k++){	
+		for (int k = 0; k < 11; k++){	
 		if (operacao.equals("benchmark") || operacao.equals("Benchmark")){
 			for (int i = 0; i < 2; i++){
 				if (i==0){
@@ -146,7 +148,7 @@ public class arbitraryPrecision {
 				
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,size,"sequencial");
-				
+
 //				System.out.println("Resultado da multiplicacao Sequencial: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 				
@@ -223,7 +225,7 @@ public class arbitraryPrecision {
 			}else{
 				System.out.println("Operacao nao reconhecida! Tente novamente:\nSomaS = Soma Sequencial\nSomaP = Soma Paralelo\nMultS = Multiplicacao Sequencial\nMultP0D = Multiplicacao Paralelo 0D\nMultP1D = Multiplicacao Paralelo 1D\nMultP2D = Multiplicacao Paralelo 2D");
 			}
-//		}
+		}
 			System.out.println("\n---------------------------------\n");
 		
 			System.out.println("Pretende realizar outra operacao? s/n");
