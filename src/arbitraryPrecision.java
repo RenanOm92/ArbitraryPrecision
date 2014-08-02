@@ -56,7 +56,7 @@ public class arbitraryPrecision {
 		long tempoInicio;
 		
 		while (!repetir.equals("n")){
-		for (int k = 0; k < 11; k++){	
+//		for (int k = 0; k < 11; k++){	
 		if (operacao.equals("benchmark") || operacao.equals("Benchmark")){
 			for (int i = 0; i < 2; i++){
 				if (i==0){
@@ -113,16 +113,16 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoSoma = somar(st1,st2,size,"sequencial");
 				
-//				System.out.println("Resultado da soma Sequencial: \n"+resultadoSoma);
+				System.out.println("Resultado da soma Sequencial: \n"+resultadoSoma);
 				System.out.println("Tempo da soma Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
 				
-//				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
-//				
-//				if (resultadoSomaBigIntegerJava.equals(resultadoSoma)){
-//					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
-//				}else{
-//					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
-//				}
+				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
+				
+				if (resultadoSomaBigIntegerJava.equals(resultadoSoma)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
 				
 			}else if (operacao.equals("SomaP")){
 				size = definirTamanhoColunas(arquitetura,"soma");
@@ -131,16 +131,16 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoSoma = somar(st1,st2,size,"paralelo");
 				
-		//		System.out.println("Resultado da soma em OpenCL: \n"+resultadoSoma);
+				System.out.println("Resultado da soma em OpenCL: \n"+resultadoSoma);
 				System.out.println("Tempo da soma em OpenCL: "+(System.currentTimeMillis()-tempoInicio)+" ms");	
 				
-//				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
-//				
-//				if (resultadoSomaBigIntegerJava.equals(resultadoSoma)){
-//					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
-//				}else{
-//					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
-//				}
+				String resultadoSomaBigIntegerJava = SomaBigIntegerJava(st1, st2);
+				
+				if (resultadoSomaBigIntegerJava.equals(resultadoSoma)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
 			
 			}else if (operacao.equals("MultS")){
 				size = definirTamanhoColunas(arquitetura,"multiplicacao");
@@ -149,16 +149,16 @@ public class arbitraryPrecision {
 				tempoInicio = System.currentTimeMillis();
 				resultadoMult = multiplicar(st1,st2,size,"sequencial");
 
-//				System.out.println("Resultado da multiplicacao Sequencial: \n"+resultadoMult);
+				System.out.println("Resultado da multiplicacao Sequencial: \n"+resultadoMult);
 				System.out.println("Tempo da multiplicacao Sequencial: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 				
-//				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
-//				
-//				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
-//					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
-//				}else{
-//					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
-//				}
+				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
+				
+				if (resultadoMultBigIntegerJava.equals(resultadoMult)){
+					System.out.println("Comparacao com BigInteger do Java:     A P R O V A D O");
+				}else{
+					System.out.println("Comparacao com BigInteger do Java:     R E P R O V A D O");
+				}
 				
 			}else if (operacao.equals("MultP0D")){
 				
@@ -213,19 +213,19 @@ public class arbitraryPrecision {
 			}else if (operacao.equals("SomaBigInt")){
 				tempoInicio = System.currentTimeMillis();
 				String resultadoMultBigIntegerJava = SomaBigIntegerJava(st1, st2);
-//				System.out.println("Resultado da soma BigInteger: \n"+resultadoMultBigIntegerJava);
+				System.out.println("Resultado da soma BigInteger: \n"+resultadoMultBigIntegerJava);
 				System.out.println("Tempo da soma BigInteger: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			}else if (operacao.equals("MultBigInt")){
 				
 				tempoInicio = System.currentTimeMillis();
 				String resultadoMultBigIntegerJava = MultBigIntegerJava(st1, st2);
-//				System.out.println("Resultado da multiplicacao em BigInteger: \n"+resultadoMultBigIntegerJava);
+				System.out.println("Resultado da multiplicacao em BigInteger: \n"+resultadoMultBigIntegerJava);
 				System.out.println("Tempo da multiplicacao BigInteger: "+(System.currentTimeMillis()-tempoInicio)+" ms");
 			
 			}else{
 				System.out.println("Operacao nao reconhecida! Tente novamente:\nSomaS = Soma Sequencial\nSomaP = Soma Paralelo\nMultS = Multiplicacao Sequencial\nMultP0D = Multiplicacao Paralelo 0D\nMultP1D = Multiplicacao Paralelo 1D\nMultP2D = Multiplicacao Paralelo 2D");
 			}
-		}
+//		}
 			System.out.println("\n---------------------------------\n");
 		
 			System.out.println("Pretende realizar outra operacao? s/n");
