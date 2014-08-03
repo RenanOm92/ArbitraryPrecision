@@ -389,8 +389,10 @@ public class Paralelo
             clSetKernelArg(kernel, 4, 
                     Sizeof.cl_mem, Pointer.to(memObjects[2]));
         }
-      
-        // Set the work-item dimensions
+//       long buffer [] = new long [1];
+//       clGetKernelWorkGroupInfo(kernel,device,CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,Sizeof.size_t,Pointer.to(buffer),null);
+//       System.out.println(buffer[0]);
+       // Set the work-item dimensions
         
        long[] global_work_size = null;
        long[] local_work_size = null;
