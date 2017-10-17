@@ -9,3 +9,27 @@ Passo a passo de como executar o projeto pode ser identificado na monografia cap
 Antigo repositorio é:  https://github.com/renanUFS/arbitraryPrecision
 
 Para executar o projeto é somente necessário o download da pasta “bin” que contém o projeto já compilado e a biblioteca JOCL-0.1.9.jar. É necessário ter a Java Runtime Environment (JRE) instalada na máquina, além dos drivers de OpenCL.
+
+
+---------------------------
+
+Thesis Work of my Bachelor Degree at the Federal University of Sergipe
+
+Arbitrary precision for OpenCL
+
+Calculations with big numbers, also known as
+bignum arithmetic or arbitrary precision arithmetic, is a current
+need in many areas of science, such as cryptography and astronomy.
+The size of numbers are no longer limited to certain architectures,
+going to depend only on the amount of memory available on the
+machine. However, with the growth of such numbers, also comes the
+problem of increasing runtime operations with such numbers. Then
+there is a possibility of using parallel computing to accelerate such
+calculations. Based on this, this paper demonstrates the use of the
+OpenCL framework to perform operations of addition and multiplication
+with bignums in parallel. The project was implemented with the Java
+programming language and to bind Java and OpenCL will be used the
+JOCL API . 
+
+Keywords: bignums, arbitrary precision, parallel
+computing, addition, multiplication, OpenCL, Java, JOCL.
